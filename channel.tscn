@@ -2,9 +2,14 @@
 
 [ext_resource type="PackedScene" uid="uid://c5lvwxx50r0vq" path="res://message.tscn" id="1_qkkds"]
 [ext_resource type="Script" uid="uid://c2cfg4anvcnhw" path="res://channel.gd" id="1_vksbt"]
+[ext_resource type="Shader" uid="uid://c325vs7ce4r6a" path="res://avatar_circle.gdshader" id="2_p6rag"]
+[ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="3_uw2bi"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vksbt"]
-bg_color = Color(0.18039216, 0.19215687, 0.21176471, 1)
+bg_color = Color(0.053599995, 0.069000006, 0.08, 0.16862746)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_oecnv"]
+shader = ExtResource("2_p6rag")
 
 [node name="Panel" type="Panel" unique_id=538390015]
 anchors_preset = 15
@@ -29,28 +34,730 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1412139361]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1687483493]
 layout_mode = 2
+
+[node name="Panel" type="Panel" parent="MarginContainer/HBoxContainer" unique_id=58261866]
+custom_minimum_size = Vector2(46, 0)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/Panel" unique_id=141855357]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.5
+offset_top = 4.0
+offset_right = -0.5
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Panel/ScrollContainer" unique_id=185210723]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Panel/ScrollContainer/VBoxContainer2" unique_id=1664125480]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Panel/ScrollContainer/VBoxContainer2/HBoxContainer" unique_id=456644801]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Sidebar" type="VBoxContainer" parent="MarginContainer/HBoxContainer" unique_id=768500425]
+layout_mode = 2
+size_flags_horizontal = 4
+metadata/_edit_use_anchors_ = true
+
+[node name="Search" type="Panel" parent="MarginContainer/HBoxContainer/Sidebar" unique_id=762271128]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/Search" unique_id=1809852755]
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 84.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/Search/VBoxContainer" unique_id=683082796]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/Search/VBoxContainer/HBoxContainer" unique_id=2137011290]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "  Search...."
+vertical_alignment = 1
+
+[node name="UserList" type="Panel" parent="MarginContainer/HBoxContainer/Sidebar" unique_id=316516572]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList" unique_id=2039652800]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer" unique_id=1909385764]
+layout_mode = 2
+size_flags_horizontal = 2
+theme_override_constants/separation = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1385367233]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer" unique_id=1890074480]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer" unique_id=695572947]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=447954373]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer2" unique_id=1543937517]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer2" unique_id=1810963809]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1202954444]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer3" unique_id=1784238670]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer3" unique_id=1864704344]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1130818047]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer4" unique_id=1295914914]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer4" unique_id=1886046637]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1659840821]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer5" unique_id=111815029]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer5" unique_id=435601899]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer6" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=541299267]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer6" unique_id=1131083977]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer6" unique_id=1411248501]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer7" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=2069847285]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer7" unique_id=1249165250]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer7" unique_id=1515384415]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer8" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1335424726]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer8" unique_id=1483751621]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer8" unique_id=992733105]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer9" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=821127717]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer9" unique_id=1143395602]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer9" unique_id=1214596633]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer10" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=653324944]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer10" unique_id=1658973299]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer10" unique_id=2056743616]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer11" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=626833632]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer11" unique_id=1144195732]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer11" unique_id=1463906521]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer12" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=493469634]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer12" unique_id=105846771]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer12" unique_id=538221223]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer13" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=888605557]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer13" unique_id=1324084292]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer13" unique_id=946349226]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer14" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1726710968]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer14" unique_id=1872184727]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer14" unique_id=1217808093]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer15" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=89248401]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer15" unique_id=2140773831]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer15" unique_id=1929498072]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer16" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1553875206]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer16" unique_id=199043189]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer16" unique_id=2015075007]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer17" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=203146210]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer17" unique_id=1531515665]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer17" unique_id=408226801]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer18" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1664356076]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer18" unique_id=1510088786]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer18" unique_id=701205508]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer19" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1979609262]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer19" unique_id=1200835995]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer19" unique_id=1822193631]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer20" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1557631474]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer20" unique_id=1785102966]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer20" unique_id=173251665]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer21" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1921252789]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer21" unique_id=363272425]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer21" unique_id=1198326037]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer22" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=738156191]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer22" unique_id=1593483400]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer22" unique_id=1119402110]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer23" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=727856769]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer23" unique_id=1533120640]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer23" unique_id=685859556]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer24" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1413412922]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer24" unique_id=1343338924]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer24" unique_id=1295827113]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer25" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=185553116]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer25" unique_id=1984415677]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer25" unique_id=1121099422]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer26" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1763292590]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer26" unique_id=1210664510]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer26" unique_id=1577571167]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer27" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=908942179]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer27" unique_id=377980475]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer27" unique_id=218580171]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer28" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=875550825]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer28" unique_id=2004612653]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer28" unique_id=1810680272]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer29" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=663052037]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer29" unique_id=1948955879]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer29" unique_id=449703954]
+layout_mode = 2
+text = "Other User"
+
+[node name="HBoxContainer30" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2" unique_id=1286090790]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer30" unique_id=1123981815]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/VBoxContainer2/HBoxContainer30" unique_id=1726909419]
+layout_mode = 2
+text = "Other User"
+
+[node name="UserPref" type="Panel" parent="MarginContainer/HBoxContainer/Sidebar" unique_id=701961912]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+
+[node name="Sort" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserPref" unique_id=767194172]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 3.0
+offset_top = -20.0
+offset_right = 83.0
+offset_bottom = 20.0
+grow_vertical = 2
+pivot_offset = Vector2(60, -72)
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort" unique_id=1322383447]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 13
+size_flags_vertical = 4
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Name" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort" unique_id=2061364797]
+layout_mode = 2
+text = "User"
+
+[node name="Main" type="VBoxContainer" parent="MarginContainer/HBoxContainer" unique_id=1412139361]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 15
 
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer" unique_id=1662942073]
+[node name="TopPanel" type="Panel" parent="MarginContainer/HBoxContainer/Main" unique_id=1051353333]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="ChannelLabel" type="Label" parent="MarginContainer/HBoxContainer/Main/TopPanel" unique_id=1188352396]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "<CHANNEL NAME>"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/Main" unique_id=1662942073]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="MessageList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer" unique_id=330579357]
+[node name="MessageList" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Main/ScrollContainer" unique_id=330579357]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 30
 metadata/_edit_use_anchors_ = true
 
-[node name="Message" parent="MarginContainer/VBoxContainer/ScrollContainer/MessageList" unique_id=2052089132 instance=ExtResource("1_qkkds")]
+[node name="Message" parent="MarginContainer/HBoxContainer/Main/ScrollContainer/MessageList" unique_id=2052089132 instance=ExtResource("1_qkkds")]
 layout_mode = 2
 
-[node name="NewMessageInput" type="CodeEdit" parent="MarginContainer/VBoxContainer" unique_id=1149097292]
+[node name="NewMessageInput" type="CodeEdit" parent="MarginContainer/HBoxContainer/Main" unique_id=1149097292]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 placeholder_text = "Message in #channel"
 backspace_deletes_composite_character_enabled = true
+
+[node name="Panel2" type="Panel" parent="MarginContainer/HBoxContainer" unique_id=1120447410]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Panel2" unique_id=747202925]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 5.0
+offset_right = 208.0
+offset_bottom = 632.0
+pivot_offset = Vector2(169, 255)
+size_flags_horizontal = 0
+theme_override_constants/separation = 4
+
+[node name="HBoxContainer14" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Panel2/VBoxContainer2" unique_id=550977391]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Panel2/VBoxContainer2/HBoxContainer14" unique_id=105679074]
+material = SubResource("ShaderMaterial_oecnv")
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 0
+texture = ExtResource("3_uw2bi")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Panel2/VBoxContainer2/HBoxContainer14" unique_id=518923629]
+layout_mode = 2
+text = "Godot"

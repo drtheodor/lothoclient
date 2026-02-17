@@ -5,13 +5,21 @@ const BASE_URL: String = "https://discord.com/api/v9"
 # TODO: move all requests to `Discord`
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var vbox_container: VBoxContainer = %MessageList
-@onready var scroll_container: ScrollContainer = $MarginContainer/VBoxContainer/ScrollContainer
+@onready var scroll_container: ScrollContainer = $MarginContainer/HBoxContainer/Main/ScrollContainer
 @onready var message_input: CodeEdit = %NewMessageInput
+@onready var channel_label: Label = $MarginContainer/HBoxContainer/Main/TopPanel/ChannelLabel
+@onready var user_pref: Label = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Name
+@onready var user_pref_avatar: TextureRect = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Avatar
 
 const MessageScene: PackedScene = preload("res://message.tscn")
 var previous_scroll_max: int = 0
+var _fetch_queued: bool = false
+var _request_mode: String = ""
+var _pending_user_id: String = ""
+var _first_load: bool = true
 
 func _ready() -> void:
+	get_tree().get_root().transparent_bg = true
 	http_request.request_completed.connect(_on_request_completed)
 
 	# Configure for bottom-anchored behavior
@@ -25,12 +33,91 @@ func _ready() -> void:
 	message_input.gui_input.connect(_on_code_edit_gui_input)
 
 	# TODO: move api calls to `Discord`
+	_fetch_channel_name()
+	_fetch_messages()
+	_start_polling()
+
+func _fetch_messages() -> void:
+	# Avoid overlapping requests; queue if busy
+	if http_request.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+		_fetch_queued = true
+		return
+
+	_fetch_queued = false
+	_request_mode = "messages"
+
 	var url: String = "%s/channels/%s/messages" % [BASE_URL, Discord.channel]
 	var error: Error = http_request.request(url, ["Authorization: " + Discord.token])
 
 	if error != OK:
 		print("Error making HTTP request: ", error)
 		add_error_message("Failed to load messages")
+
+func _fetch_channel_name() -> void:
+	if http_request.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+		_fetch_queued = true
+		return
+
+	_request_mode = "channel"
+	var url: String = "%s/channels/%s" % [BASE_URL, Discord.channel]
+	var error: Error = http_request.request(url, ["Authorization: " + Discord.token])
+	if error != OK:
+		print("Error fetching channel: ", error)
+
+func _fetch_user_name(user_id: String) -> void:
+	if http_request.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+		_fetch_queued = true
+		return
+
+	_request_mode = "user"
+	_pending_user_id = user_id
+	var url: String = "%s/users/%s" % [BASE_URL, user_id]
+	var error: Error = http_request.request(url, ["Authorization: " + Discord.token])
+	if error != OK:
+		print("Error fetching user: ", error)
+
+func _set_channel_label_from_channel_data(data: Dictionary) -> bool:
+	if data.has("name") and data["name"] != "":
+		channel_label.text = "#%s" % data["name"]
+		return true
+
+	if data.has("recipients") and data["recipients"] is Array and data["recipients"].size() > 0:
+		var recipient: Variant = data["recipients"][0]
+		if recipient is Dictionary:
+			var name: String = recipient.get("global_name", "") if recipient.get("global_name", "") != "" else recipient.get("username", "")
+			if name != "":
+				channel_label.text = "@%s" % name
+				return true
+
+	var user_id: String = ""
+	if data.has("user_id"):
+		user_id = str(data["user_id"])
+	elif data.has("recipient_id"):
+		user_id = str(data["recipient_id"])
+
+	if user_id != "":
+		_fetch_user_name(user_id)
+		return false
+
+	return false
+
+func _start_polling() -> void:
+	var timer := Timer.new()
+	timer.wait_time = 2.0
+	timer.one_shot = false
+	timer.autostart = true
+	timer.timeout.connect(_fetch_messages)
+	add_child(timer)
+
+func _add_pending_message(text: String) -> void:
+	var pending: GMessage = MessageScene.instantiate()
+	vbox_container.add_child(pending)
+	pending.set_timestamp(int(Time.get_unix_time_from_system()))
+	pending.set_author("You", "local", "")
+	pending.set_content(text)
+	pending.set_pending(true)
+	await get_tree().process_frame
+	scroll_to_bottom()
 
 # TODO: this should be handled inside `Discord`
 func _on_request_completed(result: int, _response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -41,15 +128,34 @@ func _on_request_completed(result: int, _response_code: int, _headers: PackedStr
 
 	var json: JSON = JSON.new()
 	var parse_result: Error = json.parse(body.get_string_from_utf8())
-	
+
 	if parse_result != OK:
 		print("JSON parse error: ", parse_result)
 		add_error_message("Failed to parse messages")
+		_request_mode = ""
 		return
 
 	var data: Variant = json.data
 
-	# print(data) # print data for decoding purposes
+	if _request_mode == "channel":
+		if data is Dictionary:
+			var handled := _set_channel_label_from_channel_data(data)
+			if handled == false:
+				return
+		_request_mode = ""
+		if _fetch_queued:
+			_fetch_messages()
+		return
+
+	if _request_mode == "user":
+		if data is Dictionary:
+			var name: String = data.get("global_name", "") if data.get("global_name", "") != "" else data.get("username", _pending_user_id)
+			channel_label.text = "@%s" % name
+		_pending_user_id = ""
+		_request_mode = ""
+		if _fetch_queued:
+			_fetch_messages()
+		return
 
 	if data is Array:
 		var messages: Array[Variant] = data
@@ -57,10 +163,16 @@ func _on_request_completed(result: int, _response_code: int, _headers: PackedStr
 	else:
 		print("Response is not an array")
 		add_error_message("Invalid response format")
+		_request_mode = ""
 		return
+
+	_request_mode = ""
+	if _fetch_queued:
+		_fetch_messages()
 
 func _on_message(messages: Array[Variant]) -> void:
 	messages.reverse()
+	var should_scroll := _first_load or _is_near_bottom()
 
 	# Clear existing messages
 	for child: Node in vbox_container.get_children():
@@ -95,11 +207,25 @@ func _on_message(messages: Array[Variant]) -> void:
 				last_message.set_timestamp(timestamp)
 				last_message.set_author(author_name, author_id, author_avatar)
 				last_message.set_content(content)
+				
+				if author_avatar and author_avatar != "":
+					Discord.get_avatar(author_id, author_avatar, self._on_image_loaded)
+				else:
+					user_pref_avatar.texture = null
+				user_pref.text = author_name
 
-	# Wait for layout to update, then scroll to bottom
+	# Wait for layout to update, then optionally scroll to bottom
 	await get_tree().process_frame
 	await get_tree().process_frame
-	scroll_to_bottom()
+	if should_scroll:
+		scroll_to_bottom()
+	_first_load = false
+
+func _is_near_bottom() -> bool:
+	var vbar: ScrollBar = scroll_container.get_v_scroll_bar()
+	if not vbar:
+		return true
+	return (vbar.max_value - scroll_container.scroll_vertical) < 50
 
 func _should_group(prev_message: GMessage, author_id: String, timestamp: int) -> bool:
 	if not prev_message: return false
@@ -150,6 +276,11 @@ func _on_code_edit_gui_input(event: InputEvent) -> void:
 			if message_input.text.strip_edges().is_empty():
 				return
 
-			Discord.send_message(Discord.channel, message_input.text)
-
+			var text_to_send := message_input.text
 			message_input.text = ''
+			_add_pending_message(text_to_send)
+			Discord.send_message(Discord.channel, text_to_send)
+			_fetch_messages()
+
+func _on_image_loaded(texture: Texture2D) -> void:
+	user_pref_avatar.texture = texture

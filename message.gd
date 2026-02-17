@@ -9,6 +9,7 @@ extends Control
 var _timestamp_unix: int = 0
 # FIXME: this should be in a base `Message` class, not the UI one
 var _author_id: String
+var _pending: bool = false
 
 const BASE_URL: String = "https://cdn.discordapp.com"
 
@@ -16,10 +17,18 @@ func set_author(author_name: String, author_id: String, avatar_id: String) -> vo
 	self.author.text = author_name
 	self._author_id = author_id
 
-	Discord.get_avatar(author_id, avatar_id, self._on_image_loaded)
+	if avatar_id and avatar_id != "":
+		Discord.get_avatar(author_id, avatar_id, self._on_image_loaded)
+	else:
+		avatar.texture = null
 
 func get_author() -> String:
 	return author.text
+
+func set_pending(pending: bool) -> void:
+	_pending = pending
+	var alpha: float = 0.6 if pending else 1.0
+	self.modulate = Color(1, 1, 1, alpha)
 
 func get_author_id() -> String:
 	return self._author_id
@@ -46,13 +55,13 @@ func set_timestamp(timestamp: int) -> void:
 
 	var local: Dictionary = Time.get_datetime_dict_from_unix_time(unix_timestamp_local)
 	var now: Dictionary = Time.get_datetime_dict_from_system()
-	
+
 	var text: String = "%02d:%02d" % [local["hour"], local["minute"]]
-	
+
 	if local["day"] != now["day"] or local["month"] != now["month"]:
 		text = "%02d-%02d " % [local["month"], local["day"]] + text
-	
+
 	if local["year"] != now["year"]:
 		text = "%04d-" % local["year"] + text
-	
+
 	timeLabel.text = text
