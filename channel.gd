@@ -4,9 +4,9 @@ const BASE_URL: String = "https://discord.com/api/v9"
 
 # TODO: move all requests to `Discord`
 @onready var http_request: HTTPRequest = $HTTPRequest
-@onready var vbox_container: VBoxContainer = $ScrollContainer/VBoxContainer
-@onready var scroll_container: ScrollContainer = $ScrollContainer
-@onready var message_input: CodeEdit = $CodeEdit
+@onready var vbox_container: VBoxContainer = %MessageList
+@onready var scroll_container: ScrollContainer = $MarginContainer/VBoxContainer/ScrollContainer
+@onready var message_input: CodeEdit = %NewMessageInput
 
 const MessageScene: PackedScene = preload("res://message.tscn")
 var previous_scroll_max: int = 0
@@ -63,6 +63,8 @@ func _on_message(messages: Array[Variant]) -> void:
 	for child: Node in vbox_container.get_children():
 		child.queue_free()
 	
+	var last_message: GMessage = null
+	
 	# Add messages in chronological order (oldest first at top, newest at bottom)
 	for message_data: Dictionary in messages:
 		#print(message_data)
@@ -73,23 +75,32 @@ func _on_message(messages: Array[Variant]) -> void:
 			#var mention_roles = message_data["mention_roles"]
 			#var attachments = message_data["attachments"]
 			#var embeds = message_data["embeds"]
-			var timestamp: String = message_data["timestamp"]
+			var iso_timestamp: String = message_data["timestamp"]
 			#var edited_timestamp: int = message_data["edited_timestamp"]
 			var author_name: String = author["global_name"]
 			var author_avatar: String = author["avatar"]
 			var author_id: String = author["id"]
 			
-			var message_instance: Node = MessageScene.instantiate()
+			var timestamp: int = Time.get_unix_time_from_datetime_string(iso_timestamp)
 			
-			vbox_container.add_child(message_instance)
-			message_instance.set_timestamp(str(timestamp))
-			message_instance.set_author(author_name, author_id, author_avatar)
-			message_instance.set_content(str(content))
+			if _should_group(last_message, author_id, timestamp):
+				last_message.append_content(content)
+			else:
+				last_message = MessageScene.instantiate()
+				vbox_container.add_child(last_message)
+				
+				last_message.set_timestamp(timestamp)
+				last_message.set_author(author_name, author_id, author_avatar)
+				last_message.set_content(content)
 	
 	# Wait for layout to update, then scroll to bottom
 	await get_tree().process_frame
 	await get_tree().process_frame
 	scroll_to_bottom()
+
+func _should_group(prev_message: GMessage, author_id: String, timestamp: int) -> bool:
+	if not prev_message: return false
+	return abs(prev_message.get_unix_timestamp() - timestamp) <= 60 * 10 * 1000 and prev_message.get_author_id() == author_id
 
 func _on_scrollbar_changed() -> void:
 	# Auto-scroll to bottom when new content is added if we were at bottom
