@@ -15,9 +15,8 @@ func _ready() -> void:
 	for line in lines:
 		if line.is_empty(): continue
 		var line2 = line.split("=", true, 1)
-		print("set: %s" % line2)
+		# print("set: %s" % line2) MASSIVE fucking security risk lol
 		OS.set_environment(line2[0], line2[1])
-
 var token: String:
 	get:
 		return OS.get_environment("TOKEN")

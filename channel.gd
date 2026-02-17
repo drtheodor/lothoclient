@@ -39,8 +39,10 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 		print("JSON parse error: ", parse_result)
 		add_error_message("Failed to parse messages")
 		return
-	
+		
 	var data = json.get_data()
+	
+	# print(data) # print data for decoding purposes
 	
 	if not (data is Array):
 		print("Response is not an array")
@@ -59,13 +61,20 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 		if message_data is Dictionary and "content" in message_data:
 			var content = message_data["content"]
 			var author = message_data["author"]
+			var mentions = message_data["mentions"]
+			var mention_roles = message_data["mention_roles"]
+			var attachments = message_data["attachments"]
+			var embeds = message_data["embeds"]
+			var timestamp = message_data["timestamp"]
+			var edited_timestamp = message_data["edited_timestamp"]
 			var author_name = author["global_name"]
 			var author_avatar = author["avatar"]
 			var author_id = author["id"]
 			var message_instance = MessageScene.instantiate()
 			vbox_container.add_child(message_instance)
-			message_instance.set_content(str(content))
+			message_instance.set_timestamp(str(timestamp))
 			message_instance.set_author(author_name, author_id, author_avatar)
+			message_instance.set_content(str(content))
 	
 	# Wait for layout to update, then scroll to bottom
 	await get_tree().process_frame

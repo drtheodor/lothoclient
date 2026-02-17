@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://bjrnqpswwo47d"]
+[gd_scene format=3 uid="uid://bjrnqpswwo47d"]
 
 [ext_resource type="PackedScene" uid="uid://c5lvwxx50r0vq" path="res://message.tscn" id="1_qkkds"]
 [ext_resource type="Script" uid="uid://c2cfg4anvcnhw" path="res://channel.gd" id="1_vksbt"]
 
-[node name="Control" type="Control"]
+[node name="Control" type="Control" unique_id=1843007467]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,7 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_vksbt")
 
-[node name="CodeEdit" type="CodeEdit" parent="."]
+[node name="CodeEdit" type="CodeEdit" parent="." unique_id=1149097292]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -23,23 +23,37 @@ grow_horizontal = 2
 grow_vertical = 0
 placeholder_text = "Message in #channel"
 
-[node name="HTTPRequest" type="HTTPRequest" parent="."]
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=280938680]
 
-[node name="ScrollContainer" type="ScrollContainer" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1662942073]
 layout_mode = 1
 anchors_preset = -1
-anchor_right = 1.0
-anchor_bottom = 0.9074074
+anchor_left = 0.019965278
+anchor_top = -0.030864192
+anchor_right = 1.0199653
+anchor_bottom = 0.8765432
 grow_horizontal = 2
 grow_vertical = 2
 horizontal_scroll_mode = 0
 metadata/_edit_use_anchors_ = true
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=330579357]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = -3
 metadata/_edit_use_anchors_ = true
 
-[node name="Message" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_qkkds")]
+[node name="Message" parent="ScrollContainer/VBoxContainer" unique_id=2052089132 instance=ExtResource("1_qkkds")]
 layout_mode = 2
 alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=898134598]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.18039216, 0.19215687, 0.21176471, 1)
