@@ -14,9 +14,9 @@ func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(CACHE_DIR)
 
 func get_or_request(url: String, callback: Callable) -> void:
-	var result: ImageTexture = _cache[url]
+	var result: ImageTexture = _cache.get(url)
 	
-	if result != null: callback.call(result)
+	if result: callback.call(result)
 	else: request_image(url).done.connect(callback)
 
 func request_image(url: String) -> CacheRequest:

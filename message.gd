@@ -4,7 +4,7 @@ extends BoxContainer
 @onready var avatar: TextureRect = $Avatar
 @onready var terminator: Label = $TerminatorLabel
 @onready var author: Label = $VBoxContainer/Author
-@onready var label: Label = $VBoxContainer/Content
+@onready var label: RichTextLabel = $VBoxContainer/Content
 @onready var timeLabel: Label = $VBoxContainer/Author/TimeLabel
 @onready var spacer: Label = $VBoxContainer/GroupSpacer
 @onready var content_spacer: Label = $VBoxContainer/ContentSpacer
@@ -60,12 +60,12 @@ func _should_group_with_previous() -> bool:
 
 func set_timestamp(timestamp: String) -> void:
 	_timestamp_iso = timestamp
-	var dict: Dictionary[String, int] = Time.get_datetime_dict_from_datetime_string(timestamp, false)
+	var dict: Dictionary = Time.get_datetime_dict_from_datetime_string(timestamp, false)
 	_timestamp_unix = Time.get_unix_time_from_datetime_dict(dict)
 	var formatted_time: String = self._get_local_discord_time(timestamp)
 	timeLabel.text = formatted_time
 
 # Doesn't fucking work on Linux at least, or at all for whatever reason. I just set it to use UTC for now because fucking hell I'm getting pissed OFF
 func _get_local_discord_time(iso_timestamp: String) -> String:
-	var dict: Dictionary[String, int] = Time.get_datetime_dict_from_datetime_string(iso_timestamp, false)
+	var dict: Dictionary = Time.get_datetime_dict_from_datetime_string(iso_timestamp, false)
 	return "%02d:%02d UTC" % [dict.hour, dict.minute]

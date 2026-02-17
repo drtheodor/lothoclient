@@ -47,14 +47,14 @@ func _on_request_completed(result: int, _response_code: int, _headers: PackedStr
 	# print(data) # print data for decoding purposes
 	
 	if data is Array:
-		var messages: Array[Dictionary] = data
+		var messages: Array[Variant] = data
 		_on_message(messages)
 	else:
 		print("Response is not an array")
 		add_error_message("Invalid response format")
 		return
 
-func _on_message(messages: Array[Dictionary]) -> void:
+func _on_message(messages: Array[Variant]) -> void:
 	messages.reverse()
 	
 	# Clear existing messages
@@ -62,16 +62,16 @@ func _on_message(messages: Array[Dictionary]) -> void:
 		child.queue_free()
 	
 	# Add messages in chronological order (oldest first at top, newest at bottom)
-	for message_data: Dictionary[String, Variant] in messages:
+	for message_data: Dictionary in messages:
 		#print(message_data)
 		if message_data is Dictionary and "content" in message_data:
 			var content: String = message_data["content"]
-			var author: Dictionary[String, Variant] = message_data["author"]
+			var author: Dictionary = message_data["author"]
 			#var mentions = message_data["mentions"]
 			#var mention_roles = message_data["mention_roles"]
 			#var attachments = message_data["attachments"]
 			#var embeds = message_data["embeds"]
-			var timestamp: int = message_data["timestamp"]
+			var timestamp: String = message_data["timestamp"]
 			#var edited_timestamp: int = message_data["edited_timestamp"]
 			var author_name: String = author["global_name"]
 			var author_avatar: String = author["avatar"]
