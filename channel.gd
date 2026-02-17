@@ -28,6 +28,7 @@ func _ready() -> void:
 		print("Error making HTTP request: ", error)
 		add_error_message("Failed to load messages")
 
+# TODO: this should be handled inside `Discord`
 func _on_request_completed(result: int, _response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS:
 		print("HTTP request failed: ", result)

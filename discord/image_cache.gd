@@ -1,3 +1,4 @@
+# TODO: stop using HTTPRequestNode and make this a normal object
 extends Node
 
 var _cache: Dictionary[String, ImageTexture] = {}
@@ -13,6 +14,7 @@ func _ready() -> void:
 	# Create cache directory if it doesn't exist
 	DirAccess.make_dir_recursive_absolute(CACHE_DIR)
 
+# TODO: perhaps, find a better pattern than anonymous fuck-knows `Callable`?
 func get_or_request(url: String, callback: Callable) -> void:
 	var result: ImageTexture = _cache.get(url)
 	
@@ -91,7 +93,7 @@ func _cleanup_pending(url: String, texture: Texture2D) -> void:
 func _get_cached_path(url: String) -> String:
 	# Create a hash of the URL for filename
 	var url_hash: String = str(url.md5_text())
-	return CACHE_DIR + url_hash + ".cache"
+	return CACHE_DIR + url_hash + ".webp"
 
 func _save_to_disk_cache(url: String, data: PackedByteArray) -> void:
 	var file: FileAccess = FileAccess.open(_get_cached_path(url), FileAccess.WRITE)
