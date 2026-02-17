@@ -18,20 +18,23 @@ func _ready() -> void:
 func get_or_request(url: String, callback: Callable) -> void:
 	var result: ImageTexture = _cache.get(url)
 	
-	if result: callback.call(result)
-	else: request_image(url).done.connect(callback)
+	if result:
+		callback.call(result)
+	else: 
+		# Check disk cache
+		var cached_path: String = _get_cached_path(url)
+		
+		if FileAccess.file_exists(cached_path):
+			var image: Image = Image.load_from_file(cached_path)
+			if image:
+				var texture: ImageTexture = ImageTexture.create_from_image(image)
+				_cache[url] = texture
+				callback.call(texture)
+				return
+		
+		request_image(url).done.connect(callback)
 
 func request_image(url: String) -> CacheRequest:
-	# Check disk cache
-	var cached_path: String = _get_cached_path(url)
-	
-	if FileAccess.file_exists(cached_path):
-		var image: Image = Image.load_from_file(cached_path)
-		if image:
-			var texture: ImageTexture = ImageTexture.create_from_image(image)
-			_cache[url] = texture
-			return null
-	
 	if _pending.has(url):
 		return _pending[url]
 	

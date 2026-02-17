@@ -22,6 +22,7 @@ offset_top = -62.0
 grow_horizontal = 2
 grow_vertical = 0
 placeholder_text = "Message in #channel"
+backspace_deletes_composite_character_enabled = true
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=280938680]
 
@@ -57,3 +58,5 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.18039216, 0.19215687, 0.21176471, 1)
+
+[connection signal="gui_input" from="CodeEdit" to="." method="_on_code_edit_gui_input"]

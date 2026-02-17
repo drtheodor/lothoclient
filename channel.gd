@@ -6,6 +6,7 @@ const BASE_URL: String = "https://discord.com/api/v9"
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var vbox_container: VBoxContainer = $ScrollContainer/VBoxContainer
 @onready var scroll_container: ScrollContainer = $ScrollContainer
+@onready var message_input: CodeEdit = $CodeEdit
 
 const MessageScene: PackedScene = preload("res://message.tscn")
 var previous_scroll_max: int = 0
@@ -121,3 +122,19 @@ func add_error_message(text: String) -> void:
 	message_instance.set_content(text)
 	await get_tree().process_frame
 	scroll_to_bottom()
+
+func _on_code_edit_gui_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
+			if event.shift_pressed:
+				event.shift_pressed = false
+				return
+			
+			# Cancel the default behavior
+			accept_event()
+			
+			if message_input.text.strip_edges().is_empty(): return
+			
+			Discord.send_message(Discord.channel, message_input.text)
+			
+			message_input.text = ''
