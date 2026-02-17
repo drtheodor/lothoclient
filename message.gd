@@ -3,9 +3,9 @@ extends BoxContainer
 
 @onready var avatar: TextureRect = $Avatar
 @onready var terminator: Label = $TerminatorLabel
-@onready var author: Label = $VBoxContainer/Author
+@onready var author: Label = $VBoxContainer/Author/Name
 @onready var label: RichTextLabel = $VBoxContainer/Content
-@onready var timeLabel: Label = $VBoxContainer/Author/TimeLabel
+@onready var timeLabel: Label = $VBoxContainer/Author/Time
 @onready var spacer: Label = $VBoxContainer/GroupSpacer
 @onready var content_spacer: Label = $VBoxContainer/ContentSpacer
 

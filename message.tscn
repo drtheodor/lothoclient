@@ -7,9 +7,15 @@
 shader = ExtResource("2_06ydw")
 
 [sub_resource type="LabelSettings" id="LabelSettings_d26o2"]
-font_size = 12
+line_spacing = 0.0
+font_size = 13
 outline_size = 1
-shadow_size = 7
+shadow_size = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_06ydw"]
+line_spacing = 0.0
+font_size = 8
+shadow_size = 0
 
 [node name="Message" type="HBoxContainer" unique_id=1697382624]
 anchors_preset = 15
@@ -44,22 +50,22 @@ theme_override_constants/separation = -1
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 
-[node name="Author" type="Label" parent="VBoxContainer" unique_id=1199161862]
+[node name="Author" type="HBoxContainer" parent="VBoxContainer" unique_id=882393150]
 layout_mode = 2
-size_flags_vertical = 6
+
+[node name="Name" type="Label" parent="VBoxContainer/Author" unique_id=1199161862]
+layout_mode = 2
 text = "Author"
 label_settings = SubResource("LabelSettings_d26o2")
 autowrap_trim_flags = 0
 justification_flags = 1
 
-[node name="TimeLabel" type="Label" parent="VBoxContainer/Author" unique_id=2043314774]
-layout_mode = 0
-offset_left = 49.0
-offset_top = 3.0
-offset_right = 1080.0
-offset_bottom = 15.0
-theme_override_font_sizes/font_size = 8
+[node name="Time" type="Label" parent="VBoxContainer/Author" unique_id=2043314774]
+layout_mode = 2
+size_flags_vertical = 1
 text = "8:30 PM"
+label_settings = SubResource("LabelSettings_06ydw")
+vertical_alignment = 2
 
 [node name="ContentSpacer" type="Label" parent="VBoxContainer" unique_id=665317455]
 layout_mode = 2
