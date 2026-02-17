@@ -209,7 +209,7 @@ func _on_message(messages: Array[Variant]) -> void:
 				last_message.set_content(content)
 				
 				if author_avatar and author_avatar != "":
-					Discord.get_avatar(author_id, author_avatar, self._on_image_loaded)
+					Discord.get_avatar(author_id, author_avatar, self._on_image_loaded) 
 				else:
 					user_pref_avatar.texture = null
 				user_pref.text = author_name
