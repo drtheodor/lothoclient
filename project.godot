@@ -24,6 +24,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+CacheManager="*res://cache.gd"
 Env="res://dotenv.gd"
 Discord="*uid://bv1hj2i41sqcc"
 

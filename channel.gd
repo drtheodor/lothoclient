@@ -13,18 +13,21 @@ var previous_scroll_max: int = 0
 
 func _ready() -> void:
 	http_request.request_completed.connect(_on_request_completed)
-	
+
 	# Configure for bottom-anchored behavior
 	vbox_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	vbox_container.grow_vertical = Control.GROW_DIRECTION_BOTH
-	
+
 	# Monitor scroll changes
 	scroll_container.get_v_scroll_bar().changed.connect(_on_scrollbar_changed)
-	
+
+	# Hook up message input submit handler
+	message_input.gui_input.connect(_on_code_edit_gui_input)
+
 	# TODO: move api calls to `Discord`
 	var url: String = "%s/channels/%s/messages" % [BASE_URL, Discord.channel]
 	var error: Error = http_request.request(url, ["Authorization: " + Discord.token])
-	
+
 	if error != OK:
 		print("Error making HTTP request: ", error)
 		add_error_message("Failed to load messages")
@@ -35,7 +38,7 @@ func _on_request_completed(result: int, _response_code: int, _headers: PackedStr
 		print("HTTP request failed: ", result)
 		add_error_message("Failed to load messages")
 		return
-	
+
 	var json: JSON = JSON.new()
 	var parse_result: Error = json.parse(body.get_string_from_utf8())
 	
@@ -43,11 +46,11 @@ func _on_request_completed(result: int, _response_code: int, _headers: PackedStr
 		print("JSON parse error: ", parse_result)
 		add_error_message("Failed to parse messages")
 		return
-		
+
 	var data: Variant = json.data
-	
+
 	# print(data) # print data for decoding purposes
-	
+
 	if data is Array:
 		var messages: Array[Variant] = data
 		_on_message(messages)
@@ -58,13 +61,13 @@ func _on_request_completed(result: int, _response_code: int, _headers: PackedStr
 
 func _on_message(messages: Array[Variant]) -> void:
 	messages.reverse()
-	
+
 	# Clear existing messages
 	for child: Node in vbox_container.get_children():
 		child.queue_free()
-	
+
 	var last_message: GMessage = null
-	
+
 	# Add messages in chronological order (oldest first at top, newest at bottom)
 	for message_data: Dictionary in messages:
 		#print(message_data)
@@ -77,22 +80,22 @@ func _on_message(messages: Array[Variant]) -> void:
 			#var embeds = message_data["embeds"]
 			var iso_timestamp: String = message_data["timestamp"]
 			#var edited_timestamp: int = message_data["edited_timestamp"]
-			var author_name: String = author["global_name"]
+			var author_name: String = author["global_name"] if author["global_name"] else author["username"] # I don't know why this fixes it but it doesl
 			var author_avatar: String = author["avatar"]
 			var author_id: String = author["id"]
-			
+
 			var timestamp: int = Time.get_unix_time_from_datetime_string(iso_timestamp)
-			
+
 			if _should_group(last_message, author_id, timestamp):
 				last_message.append_content(content)
 			else:
 				last_message = MessageScene.instantiate()
 				vbox_container.add_child(last_message)
-				
+
 				last_message.set_timestamp(timestamp)
 				last_message.set_author(author_name, author_id, author_avatar)
 				last_message.set_content(content)
-	
+
 	# Wait for layout to update, then scroll to bottom
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -105,7 +108,7 @@ func _should_group(prev_message: GMessage, author_id: String, timestamp: int) ->
 func _on_scrollbar_changed() -> void:
 	# Auto-scroll to bottom when new content is added if we were at bottom
 	var vbar: ScrollBar = scroll_container.get_v_scroll_bar()
-	
+
 	if vbar:
 		# Check if scroll max increased (new content)
 		if vbar.max_value > previous_scroll_max:
@@ -113,7 +116,7 @@ func _on_scrollbar_changed() -> void:
 			if abs(scroll_container.scroll_vertical - previous_scroll_max) < 50:
 				await get_tree().process_frame
 				scroll_container.scroll_vertical = int(vbar.max_value)
-		
+
 		previous_scroll_max = int(vbar.max_value)
 
 func scroll_to_bottom() -> void:
@@ -140,12 +143,13 @@ func _on_code_edit_gui_input(event: InputEvent) -> void:
 			if event.shift_pressed:
 				event.shift_pressed = false
 				return
-			
+
 			# Cancel the default behavior
 			accept_event()
-			
-			if message_input.text.strip_edges().is_empty(): return
-			
+
+			if message_input.text.strip_edges().is_empty():
+				return
+
 			Discord.send_message(Discord.channel, message_input.text)
-			
+
 			message_input.text = ''
