@@ -1,0 +1,32 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="gdiscord"
+run/main_scene="uid://bjrnqpswwo47d"
+config/features=PackedStringArray("4.5", "GL Compatibility")
+boot_splash/show_image=false
+config/icon="res://icon.svg"
+
+[autoload]
+
+CacheManager="*res://cache.gd"
+Env="*res://dotenv.gd"
+
+[physics]
+
+2d/physics_engine="Dummy"
+3d/physics_engine="Dummy"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
