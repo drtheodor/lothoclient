@@ -62,10 +62,9 @@ justification_flags = 1
 
 [node name="Time" type="Label" parent="VBoxContainer/Author" unique_id=2043314774]
 layout_mode = 2
-size_flags_vertical = 1
 text = "8:30 PM"
 label_settings = SubResource("LabelSettings_06ydw")
-vertical_alignment = 2
+vertical_alignment = 1
 
 [node name="ContentSpacer" type="Label" parent="VBoxContainer" unique_id=665317455]
 layout_mode = 2
