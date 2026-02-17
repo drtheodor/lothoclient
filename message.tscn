@@ -35,7 +35,7 @@ text = "                                              "
 
 [node name="Avatar" type="TextureRect" parent="." unique_id=279053992]
 material = SubResource("ShaderMaterial_13d81")
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 8
 expand_mode = 1
