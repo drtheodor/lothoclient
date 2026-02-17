@@ -23,7 +23,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Env="*res://dotenv.gd"
+Env="res://dotenv.gd"
 
 [debug]
 
