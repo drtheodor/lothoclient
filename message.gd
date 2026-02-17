@@ -59,13 +59,23 @@ func _should_group_with_previous() -> bool:
 	return same_author and time_delta <= 600
 
 func set_timestamp(timestamp: String) -> void:
-	_timestamp_iso = timestamp
-	var dict: Dictionary = Time.get_datetime_dict_from_datetime_string(timestamp, false)
-	_timestamp_unix = Time.get_unix_time_from_datetime_dict(dict)
-	var formatted_time: String = self._get_local_discord_time(timestamp)
-	timeLabel.text = formatted_time
+	self._timestamp_iso = timestamp
+	self._timestamp_unix = Time.get_unix_time_from_datetime_string(timestamp)
 
-# Doesn't fucking work on Linux at least, or at all for whatever reason. I just set it to use UTC for now because fucking hell I'm getting pissed OFF
-func _get_local_discord_time(iso_timestamp: String) -> String:
-	var dict: Dictionary = Time.get_datetime_dict_from_datetime_string(iso_timestamp, false)
-	return "%02d:%02d UTC" % [dict.hour, dict.minute]
+	var timezone_info: Dictionary = Time.get_time_zone_from_system()
+	var utc_offset_minutes: int = timezone_info["bias"]
+
+	var unix_timestamp_local: int = self._timestamp_unix + (utc_offset_minutes * 60)
+
+	var local: Dictionary = Time.get_datetime_dict_from_unix_time(unix_timestamp_local)
+	var now: Dictionary = Time.get_datetime_dict_from_system()
+	
+	var text: String = "%02d:%02d" % [local["hour"], local["minute"]]
+	
+	if local["day"] != now["day"] or local["month"] != now["month"]:
+		text = "%02d-%02d " % [local["month"], local["day"]] + text
+	
+	if local["year"] != now["year"]:
+		text = "%04d-" % local["year"] + text
+	
+	timeLabel.text = text
