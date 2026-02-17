@@ -15,6 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="gdiscord"
+config/version="0.0.0"
 run/main_scene="uid://bjrnqpswwo47d"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 run/low_processor_mode=true
@@ -37,10 +38,15 @@ gdscript/warnings/unsafe_call_argument=1
 [display]
 
 window/energy_saving/keep_screen_on=false
+window/handheld/orientation=1
+window/ios/hide_home_indicator=false
+window/ios/hide_status_bar=false
+window/ios/suppress_ui_gesture=false
 
 [physics]
 
 common/physics_ticks_per_second=1
+common/max_physics_steps_per_frame=1
 2d/physics_engine="Dummy"
 3d/physics_engine="Dummy"
 common/enable_object_picking=false
@@ -49,3 +55,40 @@ common/enable_object_picking=false
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+lights_and_shadows/directional_shadow/size=256
+lights_and_shadows/directional_shadow/size.mobile=256
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=0
+lights_and_shadows/positional_shadow/soft_shadow_filter_quality=0
+2d/shadow_atlas/size=128
+2d/batching/item_buffer_size=128
+2d/batching/uniform_set_cache_size=256
+reflections/sky_reflections/roughness_layers=1
+reflections/sky_reflections/texture_array_reflections=false
+reflections/sky_reflections/ggx_samples=0
+reflections/reflection_atlas/reflection_size=4
+reflections/reflection_atlas/reflection_size.mobile=4
+reflections/reflection_atlas/reflection_count=1
+reflections/specular_occlusion/enabled=false
+driver/depth_prepass/enable=false
+limits/global_shader_variables/buffer_size=16
+lightmapping/lightmap_gi/use_bicubic_filter=false
+limits/opengl/max_renderable_lights=2
+limits/opengl/max_lights_per_object=2
+lightmapping/bake_quality/low_quality_ray_count=1
+lightmapping/bake_quality/medium_quality_ray_count=1
+lightmapping/bake_quality/high_quality_ray_count=1
+lightmapping/bake_quality/ultra_quality_ray_count=1
+lightmapping/bake_performance/max_rays_per_pass=1
+lightmapping/bake_performance/region_size=1
+lightmapping/bake_performance/max_transparency_rays=1
+lightmapping/bake_quality/low_quality_probe_ray_count=1
+lightmapping/bake_quality/medium_quality_probe_ray_count=1
+lightmapping/bake_quality/high_quality_probe_ray_count=1
+lightmapping/bake_quality/ultra_quality_probe_ray_count=1
+lightmapping/bake_performance/max_rays_per_probe_pass=1
+lights_and_shadows/positional_shadow/atlas_size=256
+lights_and_shadows/positional_shadow/atlas_size.mobile=256
+lights_and_shadows/positional_shadow/atlas_quadrant_0_subdiv=0
+lights_and_shadows/positional_shadow/atlas_quadrant_1_subdiv=0
+lights_and_shadows/positional_shadow/atlas_quadrant_2_subdiv=0
+lights_and_shadows/positional_shadow/atlas_quadrant_3_subdiv=0
