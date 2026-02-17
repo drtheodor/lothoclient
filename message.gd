@@ -4,7 +4,7 @@ extends BoxContainer
 @onready var terminator = $TerminatorLabel
 @onready var author = $VBoxContainer/Author
 @onready var label = $VBoxContainer/Content
-@onready var timeLabel = $VBoxContainer/TimeLabel
+@onready var timeLabel = $VBoxContainer/Author/TimeLabel
 @onready var spacer = $VBoxContainer/GroupSpacer
 @onready var content_spacer = $VBoxContainer/ContentSpacer
 

@@ -77,6 +77,3 @@ metadata/_edit_use_anchors_ = true
 [node name="NullLabel" type="Label" parent="VBoxContainer" unique_id=749735786]
 layout_mode = 2
 theme_override_font_sizes/font_size = 4
-
-[node name="VBoxContainer2" type="VBoxContainer" parent="." unique_id=814754012]
-layout_mode = 2
