@@ -9,15 +9,17 @@ const ImageCache: GDScript = preload("res://discord/image_cache.gd")
 @onready var image_cache: ImageCache = ImageCache.new()
 @onready var http: HTTPRequest = HTTPRequest.new()
 
+func _dummy_func() -> void: pass
+
 func _ready() -> void:
 	add_child(image_cache)
 	add_child(http)
 
-func get_avatar(user_id: String, avatar_id: String, callback: Callable) -> void:
+func get_avatar(user_id: String, avatar_id: String, callback: Callable) -> ImageTexture:
 	var url: String = "%s/avatars/%s/%s.webp?size=64" % [CDN_URL, user_id, avatar_id]
-	self.image_cache.get_or_request(url, callback)
+	return await self.image_cache.get_or_request(url, callback)
 
-func send_message(channel_id: String, message: String) -> void:
+func send_message(channel_id: String, message: String, callback: Callable = _dummy_func) -> void:
 	var s: int = self._generate_snowflake()
 	
 	var body: Dictionary[String, Variant] = {
@@ -37,6 +39,9 @@ func send_message(channel_id: String, message: String) -> void:
 		"Authorization: " + self.token, 
 		"Content-Type: application/json"
 	], HTTPClient.Method.METHOD_POST, JSON.stringify(body))
+
+func fetch_messages(channel_id: String, callback: Callable = _dummy_func) -> void:
+	pass
 
 const DISCORD_EPOCH: int = 1420070400000
 

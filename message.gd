@@ -20,7 +20,7 @@ func set_author(author_name: String, author_id: String, avatar_id: String) -> vo
 	self._author_id = author_id
 
 	if avatar_id and avatar_id != "":
-		Discord.get_avatar(author_id, avatar_id, self._on_image_loaded)
+		avatar.texture = await Discord.get_avatar(author_id, avatar_id, self._on_image_loaded)
 	else:
 		avatar.texture = null
 

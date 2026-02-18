@@ -14,12 +14,12 @@ func _ready() -> void:
 	# Create cache directory if it doesn't exist
 	DirAccess.make_dir_recursive_absolute(CACHE_DIR)
 
-# TODO: perhaps, find a better pattern than anonymous fuck-knows `Callable`?
-func get_or_request(url: String, callback: Callable) -> void:
+func get_or_request(url: String, callback: Callable) -> ImageTexture:
 	var result: ImageTexture = _cache.get(url)
 
 	if result:
-		callback.call(result)
+		return result
+		#callback.call(result)
 	else:
 		# Check disk cache
 		var cached_path: String = _get_cached_path(url)
@@ -29,31 +29,25 @@ func get_or_request(url: String, callback: Callable) -> void:
 			if image:
 				var texture: ImageTexture = ImageTexture.create_from_image(image)
 				_cache[url] = texture
-				callback.call(texture)
-				return
+				return texture
+		
+		return await request_image(url)
 
-		request_image(url).done.connect(callback)
-
-func request_image(url: String) -> CacheRequest:
+func request_image(url: String) -> Signal:
 	if _pending.has(url):
-		return _pending[url]
+		return _pending[url].done
 
 	# Start new download
 	var result: CacheRequest = CacheRequest.new()
 	_pending[url] = result
-	_download_image(url)
+	await _download_image(url)
 
-	return result
+	return result.done
 
 func _download_image(url: String) -> void:
 	print("Downloading " + url)
 	var http_request: HTTPRequest = HTTPRequest.new()
 	add_child(http_request)
-
-	http_request.request_completed.connect(
-		func(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
-			_on_image_downloaded(url, result, response_code, headers, body, http_request)
-	)
 
 	var error: Error = http_request.request(url)
 
@@ -62,9 +56,20 @@ func _download_image(url: String) -> void:
 		http_request.queue_free()
 		_cleanup_pending(url, null)
 
+	var http_result: Array = await http_request.request_completed
+	#.connect(
+	#	func(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	#		_on_image_downloaded(url, result, response_code, headers, body, http_request)
+	#)
+	var result: int = http_result[0]
+	var response_code: int = http_result[1]
+	var body: PackedByteArray = http_result[3]
+	
+	_on_image_downloaded(url, result, response_code, body, http_request)
+
+
 func _on_image_downloaded(url: String, result: int, response_code: int,
-						 _headers: PackedStringArray, body: PackedByteArray,
-						 http_request: HTTPRequest) -> void:
+						 body: PackedByteArray, http_request: HTTPRequest) -> void:
 	http_request.queue_free()
 
 	var texture: ImageTexture = null
