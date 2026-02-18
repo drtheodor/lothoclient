@@ -20,7 +20,7 @@ func set_author(author_name: String, author_id: String, avatar_id: String) -> vo
 	self._author_id = author_id
 
 	if avatar_id and avatar_id != "":
-		avatar.texture = await Discord.get_avatar(author_id, avatar_id, self._on_image_loaded)
+		avatar.texture = await Discord.get_avatar(author_id, avatar_id)
 	else:
 		avatar.texture = null
 
@@ -37,9 +37,6 @@ func get_author_id() -> String:
 
 func get_unix_timestamp() -> int:
 	return _timestamp_unix
-
-func _on_image_loaded(texture: Texture2D) -> void:
-	avatar.texture = texture
 
 func set_content(text: String, attachments: Array = [], embeds: Array = []) -> void:
 	_tokens = []
@@ -58,10 +55,10 @@ func _add_text_and_media(text: String, attachments: Array, embeds: Array) -> voi
 		if embed is Dictionary:
 			if _tokens.size() > 0:
 				_tokens.append({"type": "text", "value": "\n"})
-			var embed_title := str(embed.get("title", ""))
+			var embed_title: String = str(embed.get("title", ""))
 			if embed_title != "":
 				_tokens.append({"type": "text", "value": embed_title})
-			var embed_description := str(embed.get("description", ""))
+			var embed_description: String = str(embed.get("description", ""))
 			if embed_description != "":
 				_tokens.append({"type": "text", "value": embed_description})
 			var embed_image: Variant = embed.get("image", {})
@@ -80,7 +77,7 @@ func _add_text_and_media(text: String, attachments: Array, embeds: Array) -> voi
 			if _tokens.size() > 0:
 				_tokens.append({"type": "text", "value": "\n"})
 			var url_attachment: String = str(attachment["url"])
-			var is_image := false
+			var is_image: bool = false
 			if attachment.has("content_type"):
 				var ct: String = str(attachment["content_type"]).to_lower()
 				is_image = ct.begins_with("image/")
@@ -96,21 +93,21 @@ func _add_text_and_media(text: String, attachments: Array, embeds: Array) -> voi
 
 func _tokenize_text(text: String) -> Array:
 	var tokens: Array = []
-	var regex := RegEx.new()
+	var regex: RegEx = RegEx.new()
 	regex.compile("(<(a?):[A-Za-z0-9_]+:[0-9]+>)|((?i)https?://\\S+)")
-	var start := 0
+	var start: int = 0
 
-	for match in regex.search_all(text):
-		var s := match.get_start(0)
-		var e := match.get_end(0)
+	for match: RegExMatch in regex.search_all(text):
+		var s: int = match.get_start(0)
+		var e: int = match.get_end(0)
 		if s > start:
 			tokens.append({"type": "text", "value": text.substr(start, s - start)})
-		var full := match.get_string(0)
+		var full: String = match.get_string(0)
 		if full.begins_with("<"):
 			tokens.append({"type": "emoji", "raw": full, "texture": null})
 		else:
-			var url := full
-			var normalized := _normalize_image_url(url)
+			var url: String = full
+			var normalized: String = _normalize_image_url(url)
 			if _is_image_url(normalized):
 				tokens.append({"type": "image", "url": normalized, "texture": null})
 			elif _looks_like_media(normalized):
@@ -130,46 +127,47 @@ func _refresh_label() -> void:
 	for token: Dictionary in _tokens:
 		match token.get("type", ""):
 			"text":
-				label.append_text(token.get("value", ""))
+				label.append_text(str(token.get("value", "")))
 			"emoji", "image":
 				var tex: Texture2D = token.get("texture")
 				if tex:
-					var size: Vector2 = tex.get_size()
-					var width := size.x
-					var height := size.y
+					# FIXME: use image scaling options instead of this
+					var tex_size: Vector2 = tex.get_size()
+					var width: int = int(tex_size.x)
+					var height: int = int(tex_size.y)
 					if width > 256:
-						var scale := 256.0 / width
+						var tex_scale: float = 256.0 / width
 						width = 256
-						height = int(height * scale)
-					label.add_image(tex, width, height, Color(1.0, 1.0, 1.0, 1.0), 5, Rect2(0, 0, 0, 0), true)
+						height = int(height * tex_scale)
+					label.add_image(tex, width, height, Color(1.0, 1.0, 1.0, 1.0), InlineAlignment.INLINE_ALIGNMENT_CENTER, Rect2(0, 0, 0, 0), true)
 				else:
 					label.append_text(" [image] ")
 
 func _request_missing_textures() -> void:
-	for i in range(_tokens.size()):
+	for i: int in range(_tokens.size()):
 		var token: Dictionary = _tokens[i]
 		if (token.get("type") == "emoji" or token.get("type") == "image") and token.get("texture") == null:
-			var url: Variant = token.get("url", "")
+			var url: String = token.get("url", "")
 			if token.get("type") == "emoji":
-				url = _emoji_to_url(token.get("raw", ""))
+				url = _emoji_to_url(str(token.get("raw", "")))
 			if url == "":
 				continue
-			var index := i
-			Discord.image_cache.get_or_request(url, func(tex: Texture2D) -> void:
-				if tex:
-					_tokens[index]["texture"] = tex
-				_refresh_label()
-			)
+				
+			var tex: ImageTexture = await Discord.image_cache.get_or_request(url)
+			if tex:
+				_tokens[i]["texture"] = tex
+			_refresh_label()
 
+# TODO: generify this function, as it could work for channels, pings and etc
 func _emoji_to_url(raw: String) -> String:
-	var regex := RegEx.new()
+	var regex: RegEx = RegEx.new()
 	regex.compile("<(a?):([A-Za-z0-9_]+):([0-9]+)>")
-	var match := regex.search(raw)
+	var match: RegExMatch = regex.search(raw)
 	if not match:
-		return ""
-	var animated := match.get_string(1) == "a"
-	var id := match.get_string(3)
-	return "%s/emojis/%s.%s?size=64&quality=lossless" % [BASE_URL, id, "gif" if animated else "png"]
+		return "" # TODO: return null instead
+	var animated: bool = match.get_string(1) == "a"
+	var id: String = match.get_string(3)
+	return "%s/emojis/%s.%s?size=64&quality=lossless" % [BASE_URL, id, "gif" if animated else "webp"]
 
 func _normalize_image_url(url: String) -> String:
 	if url.to_lower().ends_with(".gifv"):
@@ -177,21 +175,23 @@ func _normalize_image_url(url: String) -> String:
 	return url
 
 func _strip_url_params(url: String) -> String:
-	var clean := url
-	var q := clean.find("?")
+	var clean: String = url
+	var q: int = clean.find("?")
 	if q != -1:
 		clean = clean.substr(0, q)
-	var h := clean.find("#")
+	var h: int = clean.find("#")
 	if h != -1:
 		clean = clean.substr(0, h)
 	return clean
 
+# FIXME: this sucks
 func _looks_like_media(url: String) -> bool:
-	var clean := _strip_url_params(url)
+	var clean: String = _strip_url_params(url)
 	return clean.find("/emojis/") != -1 or _is_image_url(clean)
 
+# FIXME: this sucks
 func _is_image_url(url: String) -> bool:
-	var lower := _strip_url_params(url).to_lower()
+	var lower: String = _strip_url_params(url).to_lower()
 	return lower.ends_with(".png") or lower.ends_with(".jpg") or lower.ends_with(".jpeg") or lower.ends_with(".gif") or lower.ends_with(".webp") or lower.ends_with(".bmp") or lower.ends_with(".avif") or lower.ends_with(".gifv")
 
 func set_timestamp(timestamp: int) -> void:

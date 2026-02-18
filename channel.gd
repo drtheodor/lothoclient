@@ -12,8 +12,11 @@ const BASE_URL: String = "https://discord.com/api/v9"
 @onready var user_pref_avatar: TextureRect = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Avatar
 
 const MessageScene: PackedScene = preload("res://message.tscn")
+
 var previous_scroll_max: int = 0
 var _fetch_queued: bool = false
+
+# FIXME: this sucks
 var _request_mode: String = ""
 var _pending_user_id: String = ""
 var _first_load: bool = true
@@ -81,9 +84,9 @@ func _set_channel_label_from_channel_data(data: Dictionary) -> bool:
 	if data.has("recipients") and data["recipients"] is Array and data["recipients"].size() > 0:
 		var recipient: Variant = data["recipients"][0]
 		if recipient is Dictionary:
-			var name: String = recipient.get("global_name", "") if recipient.get("global_name", "") != "" else recipient.get("username", "")
-			if name != "":
-				channel_label.text = "@%s" % name
+			var username: String = recipient.get("global_name", "") if recipient.get("global_name", "") != "" else recipient.get("username", "")
+			if username != "":
+				channel_label.text = "@%s" % username
 				return true
 
 	var user_id: String = ""
@@ -98,8 +101,9 @@ func _set_channel_label_from_channel_data(data: Dictionary) -> bool:
 
 	return false
 
+# FIXME: this sucks
 func _start_polling() -> void:
-	var timer := Timer.new()
+	var timer: Timer = Timer.new()
 	timer.wait_time = 2.0
 	timer.one_shot = false
 	timer.autostart = true
@@ -136,8 +140,9 @@ func _on_request_completed(result: int, _response_code: int, _headers: PackedStr
 
 	if _request_mode == "channel":
 		if data is Dictionary:
-			var handled := _set_channel_label_from_channel_data(data)
-			if handled == false:
+			var dict: Dictionary = data
+			var handled: bool = _set_channel_label_from_channel_data(dict)
+			if not handled:
 				return
 		_request_mode = ""
 		if _fetch_queued:
@@ -146,8 +151,8 @@ func _on_request_completed(result: int, _response_code: int, _headers: PackedStr
 
 	if _request_mode == "user":
 		if data is Dictionary:
-			var name: String = data.get("global_name", "") if data.get("global_name", "") != "" else data.get("username", _pending_user_id)
-			channel_label.text = "@%s" % name
+			var channel_name: String = data.get("global_name", "") if data.get("global_name", "") != "" else data.get("username", _pending_user_id)
+			channel_label.text = "@%s" % channel_name
 		_pending_user_id = ""
 		_request_mode = ""
 		if _fetch_queued:
@@ -169,7 +174,7 @@ func _on_request_completed(result: int, _response_code: int, _headers: PackedStr
 
 func _on_message(messages: Array[Variant]) -> void:
 	messages.reverse()
-	var should_scroll := _first_load or _is_near_bottom()
+	var should_scroll: bool = _first_load or _is_near_bottom()
 
 	# Clear existing messages
 	for child: Node in vbox_container.get_children():
@@ -273,7 +278,7 @@ func _on_code_edit_gui_input(event: InputEvent) -> void:
 			if message_input.text.strip_edges().is_empty():
 				return
 
-			var text_to_send := message_input.text
+			var text_to_send: String = message_input.text
 			message_input.text = ''
 			_add_pending_message(text_to_send)
 			Discord.send_message(Discord.channel, text_to_send)

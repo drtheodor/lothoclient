@@ -14,7 +14,7 @@ func _ready() -> void:
 	# Create cache directory if it doesn't exist
 	DirAccess.make_dir_recursive_absolute(CACHE_DIR)
 
-func get_or_request(url: String, callback: Callable) -> ImageTexture:
+func get_or_request(url: String) -> ImageTexture:
 	var result: ImageTexture = _cache.get(url)
 
 	if result:
@@ -105,25 +105,26 @@ func _get_cached_path(url: String) -> String:
 	return CACHE_DIR + url_hash + ext
 
 func _save_to_disk_cache(url: String, data: PackedByteArray) -> void:
-	var cache_path := _get_cached_path(url)
+	var cache_path: String = _get_cached_path(url)
 	var file: FileAccess = FileAccess.open(cache_path, FileAccess.WRITE)
 
 	if file:
 		file.store_buffer(data)
 		file.close()
 
+# FIXME: this sucks
 func _guess_extension(url: String) -> String:
-	var clean := url
-	var query_index := clean.find("?")
+	var clean: String = url
+	var query_index: int = clean.find("?")
 	if query_index != -1:
 		clean = clean.substr(0, query_index)
-	var fragment_index := clean.find("#")
+	var fragment_index: int = clean.find("#")
 	if fragment_index != -1:
 		clean = clean.substr(0, fragment_index)
-	var dot_index := clean.rfind(".")
+	var dot_index: int = clean.rfind(".")
 	if dot_index == -1 or dot_index < clean.rfind("/"):
 		return ".img"
-	var ext := clean.substr(dot_index).to_lower()
+	var ext: String = clean.substr(dot_index).to_lower()
 	if ext == "" or ext.length() > 8:
 		return ".img"
 	return ext
