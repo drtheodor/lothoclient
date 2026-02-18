@@ -761,3 +761,5 @@ expand_mode = 1
 [node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Panel2/VBoxContainer2/HBoxContainer14" unique_id=518923629]
 layout_mode = 2
 text = "Godot"
+
+[connection signal="gui_input" from="MarginContainer/HBoxContainer/Main/NewMessageInput" to="." method="_on_code_edit_gui_input"]

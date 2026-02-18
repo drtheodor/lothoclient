@@ -29,9 +29,6 @@ func _ready() -> void:
 	# Monitor scroll changes
 	scroll_container.get_v_scroll_bar().changed.connect(_on_scrollbar_changed)
 
-	# Hook up message input submit handler
-	message_input.gui_input.connect(_on_code_edit_gui_input)
-
 	# TODO: move api calls to `Discord`
 	_fetch_channel_name()
 	_fetch_messages()
