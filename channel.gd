@@ -188,8 +188,8 @@ func _on_message(messages: Array[Variant]) -> void:
 			var author: Dictionary = message_data["author"]
 			#var mentions = message_data["mentions"]
 			#var mention_roles = message_data["mention_roles"]
-			#var attachments = message_data["attachments"]
-			#var embeds = message_data["embeds"]
+			var attachments: Array = message_data.get("attachments", [])
+			var embeds: Array = message_data.get("embeds", [])
 			var iso_timestamp: String = message_data["timestamp"]
 			#var edited_timestamp: int = message_data["edited_timestamp"]
 			var author_name: String = author["global_name"] if author["global_name"] else author["username"] # I don't know why this fixes it but it doesl
@@ -199,17 +199,17 @@ func _on_message(messages: Array[Variant]) -> void:
 			var timestamp: int = Time.get_unix_time_from_datetime_string(iso_timestamp)
 
 			if _should_group(last_message, author_id, timestamp):
-				last_message.append_content(content)
+				last_message.append_content(content, attachments, embeds)
 			else:
 				last_message = MessageScene.instantiate()
 				vbox_container.add_child(last_message)
 
 				last_message.set_timestamp(timestamp)
 				last_message.set_author(author_name, author_id, author_avatar)
-				last_message.set_content(content)
-				
+				last_message.set_content(content, attachments, embeds)
+
 				if author_avatar and author_avatar != "":
-					Discord.get_avatar(author_id, author_avatar, self._on_image_loaded) 
+					Discord.get_avatar(author_id, author_avatar, self._on_image_loaded)
 				else:
 					user_pref_avatar.texture = null
 				user_pref.text = author_name
