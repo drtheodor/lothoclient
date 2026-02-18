@@ -210,11 +210,12 @@ func _on_message(messages: Array[Variant]) -> void:
 				last_message.set_author(author_name, author_id, author_avatar)
 				last_message.set_content(content, attachments, embeds)
 
-				if author_avatar and author_avatar != "":
-					Discord.get_avatar(author_id, author_avatar, self._on_image_loaded)
+				user_pref.text = author_name
+				
+				if author_avatar and not author_avatar.is_empty():
+					user_pref_avatar.texture = await Discord.get_avatar(author_id, author_avatar)
 				else:
 					user_pref_avatar.texture = null
-				user_pref.text = author_name
 
 	# Wait for layout to update, then optionally scroll to bottom
 	await get_tree().process_frame
@@ -283,6 +284,3 @@ func _on_code_edit_gui_input(event: InputEvent) -> void:
 			_add_pending_message(text_to_send)
 			Discord.send_message(Discord.channel, text_to_send)
 			_fetch_messages()
-
-func _on_image_loaded(texture: Texture2D) -> void:
-	user_pref_avatar.texture = texture
