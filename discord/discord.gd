@@ -14,8 +14,10 @@ func _ready() -> void:
 	add_child(http)
 
 func get_avatar(user_id: String, avatar_id: String) -> ImageTexture:
+	if not avatar_id: return null
+	
 	var url: String = "%s/avatars/%s/%s.webp?size=64" % [CDN_URL, user_id, avatar_id]
-	return await self.image_cache.get_or_request(url)
+	return await self.image_cache.get_or_request(url, "webp")
 
 func send_message(channel_id: String, message: String) -> void:
 	var s: int = self._generate_snowflake()
@@ -37,9 +39,6 @@ func send_message(channel_id: String, message: String) -> void:
 		"Authorization: " + self.token, 
 		"Content-Type: application/json"
 	], HTTPClient.Method.METHOD_POST, JSON.stringify(body))
-
-func fetch_messages(channel_id: String) -> void:
-	pass
 
 const DISCORD_EPOCH: int = 1420070400000
 

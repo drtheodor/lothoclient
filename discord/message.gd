@@ -1,0 +1,220 @@
+class_name Message
+
+var author_name: String
+var author_id: String
+var author_avatar: String
+
+var timestamp: int
+var tokens: Array[Token]
+
+func _init(_author_name: String, _author_id: String, _author_avatar: String, _timestamp: int, _tokens: Array[Token]) -> void:
+	self.author_name = _author_name
+	self.author_id = _author_id
+	self.author_avatar = _author_avatar
+	self.timestamp = _timestamp
+	self.tokens = _tokens
+
+static func from_json(data: Dictionary) -> Message:
+	var content: String = data["content"]
+	var author: Dictionary = data["author"]
+	#var mentions = message_data["mentions"]
+	#var mention_roles = message_data["mention_roles"]
+	var attachments: Array = data.get("attachments", [])
+	#var embeds: Array = data.get("embeds", [])
+	var iso_timestamp: String = data["timestamp"]
+	#var edited_timestamp: int = message_data["edited_timestamp"]
+	var _author_name: String = author["global_name"] if author["global_name"] else author["username"] # I don't know why this fixes it but it doesl
+	var _author_avatar: String = author["avatar"]
+	var _author_id: String = author["id"]
+
+	var _timestamp: int = Time.get_unix_time_from_datetime_string(iso_timestamp)
+	
+	var _tokens: Array[Token] = Token.parse(content)
+	
+	for attachment: Dictionary in attachments:
+		if attachment.has("url"):
+			if not _tokens.is_empty():
+				_tokens.append(TextToken.new("\n"))
+			
+			var url_attachment: String = str(attachment["url"])
+			var is_image: bool = false
+			
+			if attachment.has("content_type"):
+				var ct: String = str(attachment["content_type"]).to_lower()
+				is_image = ct.begins_with("image/")
+			
+			if not is_image:
+				is_image = Url.is_image(url_attachment)
+			
+			if is_image:
+				_tokens.append(ImageToken.new(url_attachment))
+			else:
+				_tokens.append(TextToken.new("[file %s] " % url_attachment))
+	
+	return Message.new(_author_name, _author_id, _author_avatar, _timestamp, _tokens)
+
+class Token:
+	
+	enum Type {
+		TEXT, IMAGE, USER, CHANNEL, EMOJI
+	}
+	
+	var type: Type
+	
+	func _init(_type: Type) -> void:
+		self.type = _type
+	
+	static func parse(input: String) -> Array[Token]:
+		var tokens: Array[Token] = []
+		var i: int = 0
+		var n: int = input.length()
+		
+		while i < n:
+			var ch: String = input[i]
+			if ch == '<':
+				var matched: bool = false
+				var j: int = i + 1
+				if j < n:
+					var next: String = input[j]
+					# Channel mention: <#123456>
+					if next == '#':
+						var id_end: int = _find_id_end(input, j + 1)
+						if id_end != -1 and id_end < n and input[id_end] == '>':
+							var id: String = input.substr(j + 1, id_end - (j + 1))
+							tokens.append(ChannelToken.new(id))
+							i = id_end + 1
+							matched = true
+					# User mention: <@123456>
+					elif next == '@':
+						var id_end: int = _find_id_end(input, j + 1)
+						if id_end != -1 and id_end < n and input[id_end] == '>':
+							var id: String = input.substr(j + 1, id_end - (j + 1))
+							tokens.append(UserToken.new(id))
+							i = id_end + 1
+							matched = true
+					# Static emoji: <:name:123456>
+					elif next == ':':
+						var name_start: int = j + 1
+						var name_end: int = _find_char(input, ':', name_start)
+						if name_end != -1:
+							var id_start: int = name_end + 1
+							var id_end: int = _find_id_end(input, id_start)
+							if id_end != -1 and id_end < n and input[id_end] == '>':
+								var name: String = input.substr(name_start, name_end - name_start)
+								var id: String = input.substr(id_start, id_end - id_start)
+								tokens.append(EmojiToken.new(name, id, false))
+								i = id_end + 1
+								matched = true
+					# Animated emoji: <a:name:123456>
+					elif next == 'a' and j + 1 < n and input[j + 1] == ':':
+						var name_start: int = j + 2
+						var name_end: int = _find_char(input, ':', name_start)
+						if name_end != -1:
+							var id_start: int = name_end + 1
+							var id_end: int = _find_id_end(input, id_start)
+							if id_end != -1 and id_end < n and input[id_end] == '>':
+								var name: String = input.substr(name_start, name_end - name_start)
+								var id: String = input.substr(id_start, id_end - id_start)
+								tokens.append(EmojiToken.new(name, id, true))
+								i = id_end + 1
+								matched = true
+				
+				if not matched:
+					# Not a valid token, treat '<' as plain text and consume until next '<' or end
+					var text_start: int = i
+					var next_lt: int = input.find('<', i + 1)
+					
+					if next_lt == -1:
+						next_lt = n
+					
+					var text: String = input.substr(text_start, next_lt - text_start)
+					
+					if not text.is_empty():
+						tokens.append(TextToken.new(text))
+					i = next_lt
+			else:
+				# Not a '<', accumulate plain text until next '<' or end
+				var text_start: int = i
+				var next_lt: int = input.find('<', i)
+				
+				if next_lt == -1:
+					next_lt = n
+				
+				var text: String = input.substr(text_start, next_lt - text_start)
+				
+				if not text.is_empty():
+					tokens.append(TextToken.new(text))
+				
+				i = next_lt
+		
+		return tokens
+
+	# Helper: find first occurrence of a character starting from `start`
+	static func _find_char(s: String, c: String, start: int) -> int:
+		for pos: int in range(start, s.length()):
+			if s[pos] == c:
+				return pos
+		return -1
+
+	# Helper: find the end of a digit sequence (first non‑digit) starting from `start`
+	# Returns -1 if no digits are found or if the string ends before any non‑digit
+	static func _find_id_end(s: String, start: int) -> int:
+		var pos: int = start
+		while pos < s.length() and s[pos].is_valid_int():
+			pos += 1
+		# If we moved at least one step and we are not at the end, return the first non‑digit index
+		if pos > start and pos < s.length():
+			return pos
+		return -1
+
+
+class TextToken extends Token:
+	var text: String
+	
+	func _init(_text: String) -> void:
+		self.text = _text
+
+class ImageToken extends AbstractImageToken:
+	
+	func _init(_url: String) -> void:
+		super(Type.IMAGE, _url)
+
+@abstract
+class AbstractImageToken extends Token:
+	var url: String
+	var texture: ImageTexture 
+	
+	func _init(_type: Type, _url: String) -> void:
+		super(_type)
+		
+		self.url = _url
+
+class EmojiToken extends AbstractImageToken:
+	var emoji_name: String
+	var emoji_id: String
+	var animated: bool
+	
+	func _init(_emoji_name: String, _emoji_id: String, _animated: bool) -> void:
+		super(Type.EMOJI, "%s/emojis/%s.%s?size=64&quality=lossless" % [
+			Discord.CDN_URL, _emoji_id, "gif" if _animated else "webp"
+		])
+		
+		self.emoji_name = _emoji_name
+		self.emoji_id = _emoji_id
+		self.animated = _animated
+
+class ChannelToken extends Token:
+	var channel_id: String
+	
+	func _init(_channel_id: String) -> void:
+		super(Type.CHANNEL)
+		
+		self.channel_id = _channel_id
+
+class UserToken extends Token:
+	var user_id: String
+	
+	func _init(_user_id: String) -> void:
+		super(Type.USER)
+		
+		self.user_id = _user_id

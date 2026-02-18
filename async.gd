@@ -1,4 +1,4 @@
 class_name Future
 
-static func now() -> void:
-	pass
+@warning_ignore("unused_signal")
+signal done

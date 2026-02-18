@@ -22,12 +22,14 @@ var _pending_user_id: String = ""
 var _first_load: bool = true
 
 func _ready() -> void:
-	get_tree().get_root().transparent_bg = true
+	if OS.get_environment("THEME") == "transparent":
+		self.get_tree().get_root().transparent_bg = true
+		
+		var style: StyleBoxFlat = StyleBoxFlat.new()
+		style.bg_color = Color.TRANSPARENT
+		self.add_theme_stylebox_override("panel", style)
+	
 	http_request.request_completed.connect(_on_request_completed)
-
-	# Configure for bottom-anchored behavior
-	vbox_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	vbox_container.grow_vertical = Control.GROW_DIRECTION_BOTH
 
 	# Monitor scroll changes
 	scroll_container.get_v_scroll_bar().changed.connect(_on_scrollbar_changed)
@@ -35,7 +37,7 @@ func _ready() -> void:
 	# TODO: move api calls to `Discord`
 	_fetch_channel_name()
 	_fetch_messages()
-	_start_polling()
+	#_start_polling()
 
 func _fetch_messages() -> void:
 	# Avoid overlapping requests; queue if busy
@@ -111,12 +113,17 @@ func _start_polling() -> void:
 	add_child(timer)
 
 func _add_pending_message(text: String) -> void:
-	var pending: GMessage = MessageScene.instantiate()
+	var pending: UiMessage = MessageScene.instantiate()
 	vbox_container.add_child(pending)
-	pending.set_timestamp(int(Time.get_unix_time_from_system()))
-	pending.set_author("You", "local", "")
-	pending.set_content(text)
+	
+	var message: Message = Message.new(
+		"You", "local", "", int(Time.get_unix_time_from_system()), [
+		Message.TextToken.new(text)
+	])
+	
 	pending.set_pending(true)
+	pending.set_message(message)
+	
 	await get_tree().process_frame
 	scroll_to_bottom()
 
@@ -180,42 +187,28 @@ func _on_message(messages: Array[Variant]) -> void:
 	for child: Node in vbox_container.get_children():
 		child.queue_free()
 
-	var last_message: GMessage = null
+	var last_message: UiMessage = null
 
 	# Add messages in chronological order (oldest first at top, newest at bottom)
 	for message_data: Dictionary in messages:
 		#print(message_data)
-		if message_data is Dictionary and "content" in message_data:
-			var content: String = message_data["content"]
-			var author: Dictionary = message_data["author"]
-			#var mentions = message_data["mentions"]
-			#var mention_roles = message_data["mention_roles"]
-			var attachments: Array = message_data.get("attachments", [])
-			var embeds: Array = message_data.get("embeds", [])
-			var iso_timestamp: String = message_data["timestamp"]
-			#var edited_timestamp: int = message_data["edited_timestamp"]
-			var author_name: String = author["global_name"] if author["global_name"] else author["username"] # I don't know why this fixes it but it doesl
-			var author_avatar: String = author["avatar"]
-			var author_id: String = author["id"]
-
-			var timestamp: int = Time.get_unix_time_from_datetime_string(iso_timestamp)
-
-			if _should_group(last_message, author_id, timestamp):
-				last_message.append_content(content, attachments, embeds)
+			var message: Message = Message.from_json(message_data)
+			
+			if last_message and _should_group(last_message.message, message):
+				last_message.append_message(message)
 			else:
 				last_message = MessageScene.instantiate()
 				vbox_container.add_child(last_message)
-
-				last_message.set_timestamp(timestamp)
-				last_message.set_author(author_name, author_id, author_avatar)
-				last_message.set_content(content, attachments, embeds)
-
-				user_pref.text = author_name
 				
-				if author_avatar and not author_avatar.is_empty():
-					user_pref_avatar.texture = await Discord.get_avatar(author_id, author_avatar)
+				last_message.set_message(message)
+				
+				user_pref.text = message.author_name
+				
+				if message.author_avatar:
+					user_pref_avatar.texture = await Discord.get_avatar(message.author_id, message.author_avatar)
 				else:
 					user_pref_avatar.texture = null
+				
 
 	# Wait for layout to update, then optionally scroll to bottom
 	await get_tree().process_frame
@@ -230,9 +223,8 @@ func _is_near_bottom() -> bool:
 		return true
 	return (vbar.max_value - scroll_container.scroll_vertical) < 50
 
-func _should_group(prev_message: GMessage, author_id: String, timestamp: int) -> bool:
-	if not prev_message: return false
-	return abs(prev_message.get_unix_timestamp() - timestamp) <= 60 * 10 * 1000 and prev_message.get_author_id() == author_id
+func _should_group(prev_message: Message, new_message: Message) -> bool:
+	return abs(prev_message.timestamp - new_message.timestamp) <= 60 * 10 * 1000 and prev_message.author_id == new_message.author_id
 
 func _on_scrollbar_changed() -> void:
 	# Auto-scroll to bottom when new content is added if we were at bottom
