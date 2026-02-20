@@ -1,5 +1,6 @@
-const ZLIB_SUFFIX: Array[int] = [0x00, 0x00, 0xff, 0xff]
-static var PACKET_ZLIB_SUFFIX: PackedByteArray = PackedByteArray(ZLIB_SUFFIX)  # as an array for easy comparison
+static var ZLIB_SUFFIX: PackedByteArray = PackedByteArray(
+	[0x00, 0x00, 0xff, 0xff]
+)  # as an array for easy comparison
 
 const OUTBOUND_BUFFER_SIZE: int = 10 * 1024 * 1024 # 10MBs TODO: find smaller limit
 const INBOUND_BUFFER_SIZE: int = 10 * 1024 * 1024 # 10MBs TODO: find smaller limit
@@ -8,6 +9,7 @@ var socket: WebSocketPeer = WebSocketPeer.new()
 var decompressor: ZlibDecompressor = ZlibDecompressor.new()
 
 var buffer: PackedByteArray = PackedByteArray()
+var seq: int
 
 enum State {
 	DEAD,
@@ -57,7 +59,7 @@ func poll() -> Error:
 				buffer.append_array(packet)
 				
 				# Check for flush suffix
-				if buffer.size() >= 4 and buffer.slice(buffer.size() - 4) == PACKET_ZLIB_SUFFIX:
+				if buffer.size() >= 4 and buffer.slice(buffer.size() - 4) == ZLIB_SUFFIX:
 					# Feed the entire buffer into the decompressor
 					var err: Error = decompressor.feed_data(packet)
 					
@@ -70,8 +72,16 @@ func poll() -> Error:
 					var decompressed: PackedByteArray = decompressor.read_decompressed()
 					var message_text: String = decompressed.get_string_from_utf8()
 					
-					if not message_text.is_empty():
-						self.on_message.emit(socket, message_text)
+					if message_text:
+						var data: Variant = JSON.parse_string(message_text)
+						
+						if data:
+							var _seq: Variant = data.get("s")
+							
+							if _seq:
+								self.seq = _seq
+						
+						self.on_message.emit(socket, data)
 						
 					buffer.clear()
 				

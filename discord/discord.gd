@@ -18,16 +18,26 @@ const MASQUERADE_DISCORD_BUILD: int = 498386
 const ImageCache: GDScript = preload("res://discord/image_cache.gd")
 const Gateway: GDScript = preload("res://discord/gateway.gd")
 
-var _gateway: Gateway = Gateway.new()
+static var DEFAULT_HEADERS: PackedStringArray = PackedStringArray([
+	"Authorization: " + token,
+	"User-Agent: " + MASQUERADE_BROWSER_AGENT,
+])
 
-var image_cache: ImageCache = ImageCache.new()
+var http: HTTP = HTTP.new()
+var _gateway: Gateway = Gateway.new()
+var _heartbeat_interval: int
+var _last_heartbeat: int = -1
+
+var channel_cache: Dictionary[String, Channel] = {}
+#                                    Array[Message]
+var message_cache: Dictionary[String, Array] = {}
+
+var image_cache: ImageCache = ImageCache.new(http)
+
 signal on_message(message: Message)
 
-var http: HTTPRequest = HTTPRequest.new()
-
 func _ready() -> void:
-	add_child(image_cache)
-	add_child(http)
+	self.add_child(self.http)
 	
 	self._gateway.on_connected.connect(self._on_gateway_connected)
 	self._gateway.on_message.connect(self._on_gateway_message)
@@ -44,10 +54,10 @@ func _process(_delta: float) -> void:
 	self._gateway.poll()
 
 func _on_gateway_connected(socket: WebSocketPeer) -> void:
-	print("> Sending test packet.")
+	print("> Sending handshake packet.")
 			
 	socket.send_text(JSON.stringify({
-		"op": 2,
+		"op": 2, # Identity
 		"d": {
 			"token": self.token,
 			"capabilities": 1734653, # whatever that is
@@ -79,14 +89,77 @@ func _on_gateway_connected(socket: WebSocketPeer) -> void:
 func _on_gateway_close(_socket: WebSocketPeer, code: int, reason: String) -> void:
 	print("WebSocket closed with code: %d. Clean: %s; %s" % [code, code != -1, reason])
 	
-func _on_gateway_message(_socket: WebSocketPeer, socket_message: String) -> void:
-	var some_json: Variant = JSON.parse_string(socket_message)
-						
+func _on_gateway_message(socket: WebSocketPeer, some_json: Variant) -> void:
+	if self._heartbeat_interval and Util.get_time_millis() - self._last_heartbeat > self._heartbeat_interval:
+		if OS.is_debug_build():
+			print("Heartbeat")
+		
+		socket.send_text(JSON.stringify({
+			"op": 40,
+			"d": {
+				"seq": self._gateway.seq,
+				"qos": {
+					"active": false,
+					"ver": 27,
+					"reasons": []
+				}
+			}
+		}))
+		self._last_heartbeat = Util.get_time_millis()
+	
 	if not some_json or some_json is not Dictionary:
-		print("Received malformed JSON from gateway", socket_message)
+		print("Received malformed JSON from gateway", some_json)
 	else:
 		var json: Dictionary = some_json
 		match json["t"]:
+			"READY":
+				var some_data: Variant = json["d"]
+				var all_session: Variant = some_data["sessions"][0]
+				
+				socket.send_text(JSON.stringify({
+					"op": 3, # Presence Update
+					"d": {
+						"status": "unknown",
+						"since": 0,
+						"activities": [],
+						"afk": false
+					}
+				}))
+				
+				socket.send_text(JSON.stringify({
+					"op": 4, # Voice State Update
+					"d": {
+						"guild_id": null,
+						"channel_id": null,
+						"self_mute": false, 
+						"self_deaf": false,
+						"self_video": false,
+						"flags": 2
+					}
+				}))
+				
+				# set_watching_channel
+				#{"op":13,"d":{"channel_id":"1262635952283582484"}}
+				
+				socket.send_text(JSON.stringify({
+					"op": 3, # Presence Update
+					"d": {
+						"status": all_session["status"],
+						"since": 0,
+						"activities": all_session["activities"],
+						"afk": false
+					}
+				}))
+				
+				socket.send_text(JSON.stringify({
+					"op": 41,
+					"d": {
+						"initialization_timestamp": Util.get_time_millis(),
+						"session_id": UUID.v4(),
+						"client_launch_id": UUID.v4()
+					}
+				}))
+				
 			"MESSAGE_CREATE":
 				var some_data: Variant = json["d"]
 				
@@ -97,12 +170,34 @@ func _on_gateway_message(_socket: WebSocketPeer, socket_message: String) -> void
 				var message_json: Dictionary = some_data
 				if message_json["channel_id"] == self.channel:
 					self.on_message.emit(Message.from_json(message_json))
+			_:
+				if not self._heartbeat_interval and int(json["op"]) == 10: # HELLO
+					self._heartbeat_interval = json["d"]["heartbeat_interval"]
+					print(self._heartbeat_interval)
+					return
+				
+				if OS.is_debug_build():
+					print("Unhandled event ", json["t"])
 
 func get_avatar(user_id: String, avatar_id: String) -> ImageTexture:
 	if not avatar_id: return null
 	
 	var url: String = "%s/avatars/%s/%s.webp?size=64" % [CDN_URL, user_id, avatar_id]
 	return await self.image_cache.get_or_request(url, "webp")
+
+func get_channel(channel_id: String) -> Channel:
+	var res: Channel = self.channel_cache.get(channel_id)
+	
+	if res: return res
+	
+	var url: String = "%s/channels/%s" % [BASE_URL, channel_id]
+	var data: Variant = await http.request_json_or_null(url, ["Authorization: " + token])
+	
+	if data is Dictionary:
+		var dict: Dictionary = data
+		return Channel.from_json(dict)
+	
+	return null
 
 func send_message(channel_id: String, message: String) -> int:
 	var s: int = self._generate_snowflake()
@@ -148,10 +243,18 @@ func _generate_snowflake() -> int:
 	_snowflakes += 1
 	return res
 
-var token: String:
+static var token: String:
 	get:
 		return OS.get_environment("TOKEN")
 
 var channel: String:
-	get:
-		return OS.get_environment("CHANNEL")
+	set(val):
+		channel = val
+		
+		self._gateway.socket.send_text(JSON.stringify({
+			"op": 13,
+			"d": {
+				"channel_id": val
+			}
+		}))
+		

@@ -1,11 +1,12 @@
-# TODO: stop using HTTPRequestNode and make this a normal object
-extends Node
-
+var _http: HTTP
 var _cache: Dictionary[String, ImageTexture] = {}
 var _pending: Dictionary[String, Future] = {}
 
 # Disk cache directory
 const CACHE_DIR: String = "user://cache/"
+
+func _init(http: HTTP) -> void:
+	self._http = http
 
 func _ready() -> void:
 	# Create cache directory if it doesn't exist
@@ -21,6 +22,7 @@ func get_or_request(url: String, ext: String) -> ImageTexture:
 		var cached_path: String = _get_cached_path(url, ext)
 
 		if FileAccess.file_exists(cached_path):
+			_cache[url] = null
 			var image: Image = Image.load_from_file(cached_path)
 			if image:
 				var texture: ImageTexture = ImageTexture.create_from_image(image)
@@ -28,7 +30,7 @@ func get_or_request(url: String, ext: String) -> ImageTexture:
 				return texture
 		
 		await request_image(url, ext).done
-		return _cache.get(url)
+		return _cache[url]
 
 func request_image(url: String, ext: StringName) -> Future:
 	if _pending.has(url):
@@ -43,38 +45,29 @@ func request_image(url: String, ext: StringName) -> Future:
 
 func _download_image(url: String, ext: StringName) -> void:
 	print("Downloading ", url, " as ", ext)
-	var http_request: HTTPRequest = HTTPRequest.new()
-	add_child(http_request)
+	var resp: HTTP.Response = await self._http.request(url)
 
-	var error: Error = http_request.request(url)
-
-	if error != OK:
-		print("Failed to start request for: ", url)
-		http_request.queue_free()
+	if resp is HTTP.ResponseFail:
+		push_error("Failed to start request for: ", url, ": ", resp.error)
 		_cleanup_pending(url, null)
-
-	var http_result: Array = await http_request.request_completed
-
-	var result: int = http_result[0]
-	var response_code: int = http_result[1]
-	var body: PackedByteArray = http_result[3]
+		return
 	
-	http_request.queue_free()
-
 	var texture: ImageTexture = null
 
-	if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
+	if resp is HTTP.ResponseSuccess:
+		var success: HTTP.ResponseSuccess = resp
+		
 		var cache_path: String = _get_cached_path(url, ext)
-		_save_to_disk_cache(url, ext, body)
+		self._save_to_disk_cache(url, ext, success.body)
 
 		var image: Image = Image.new()
-		error = image.load(cache_path)
+		var error: Error = image.load(cache_path)
 
 		if error == OK:
 			texture = ImageTexture.create_from_image(image)
 			_cache[url] = texture
 		else:
-			print("Failed to parse image from: ", url)
+			push_error("Failed to parse image from: ", url)
 
 	# Notify all callbacks
 	_cleanup_pending(url, texture)
@@ -99,23 +92,6 @@ func _save_to_disk_cache(url: String, ext: StringName, data: PackedByteArray) ->
 	if file:
 		file.store_buffer(data)
 		file.close()
-
-# FIXME: this sucks
-func _guess_extension(url: String) -> String:
-	var clean: String = url
-	var query_index: int = clean.find("?")
-	if query_index != -1:
-		clean = clean.substr(0, query_index)
-	var fragment_index: int = clean.find("#")
-	if fragment_index != -1:
-		clean = clean.substr(0, fragment_index)
-	var dot_index: int = clean.rfind(".")
-	if dot_index == -1 or dot_index < clean.rfind("/"):
-		return ".img"
-	var ext: String = clean.substr(dot_index).to_lower()
-	if ext == "" or ext.length() > 8:
-		return ".img"
-	return ext
 
 func clear_memory_cache() -> void:
 	_cache.clear()
