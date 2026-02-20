@@ -16,12 +16,22 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         nativeBuildInputs = with pkgs; [
-          godot
+          git
         ];
 
-        buildInputs = with pkgs; [];
+        buildInputs = with pkgs; [
+          godot
+
+          # zlibext
+          pkg-config
+          scons
+          mold
+          zlib
+        ];
       in {
-        devShells.default = pkgs.mkShell {inherit nativeBuildInputs buildInputs;};
+        devShells.default = pkgs.mkShell {
+          inherit nativeBuildInputs buildInputs;
+        };
 
         devShells.android = pkgs.mkShell {
           inherit nativeBuildInputs;
