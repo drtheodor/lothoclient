@@ -29,5 +29,5 @@ func _ready() -> void:
 			print("Bad .env: line %s" % counter)
 			continue
 			
-		OS.set_environment(parts[0], parts[1])
+		OS.set_environment(parts[0], parts[1].strip_edges())
 		print("Loaded '%s'" % parts[0])
