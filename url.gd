@@ -1,5 +1,7 @@
 class_name Url
 
+static var REGEX: RegEx = RegEx.create_from_string("https?://[^\\s<>]+|www\\.[^\\s<>]+")
+
 ## Returns the extension of the url
 static func get_extension(url: String) -> String:
 	var ext: String = url.get_extension()

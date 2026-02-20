@@ -61,7 +61,7 @@ static func from_json(data: Dictionary) -> Message:
 class Token:
 	
 	enum Type {
-		TEXT, IMAGE, USER, CHANNEL, EMOJI
+		BREAK, TEXT, LINK, IMAGE, USER, CHANNEL, EMOJI
 	}
 	
 	var type: Type
@@ -69,120 +69,155 @@ class Token:
 	func _init(_type: Type) -> void:
 		self.type = _type
 	
+	static func _process_text_segment(text: String) -> Array[Token]:
+		var result: Array[Token] = []
+		var matches := Url.REGEX.search_all(text)
+		var last_end := 0
+		
+		for match: RegExMatch in matches:
+			var start: = match.get_start()
+			var end := match.get_end()
+			
+			# Text before the URL
+			if start > last_end:
+				var plain: = text.substr(last_end, start - last_end)
+				if plain.length() > 0:
+					result.append(TextToken.new(plain))
+			
+			# The URL itself
+			var url := match.get_string()
+			result.append(LinkToken.new(url))
+			last_end = end
+		
+		# Text after the last URL
+		if last_end < text.length():
+			var plain := text.substr(last_end)
+			if plain.length() > 0:
+				result.append(TextToken.new(plain))
+		
+		if result[0].type == Type.BREAK:
+			print("BREAK")
+		elif result[0].type == Type.TEXT:
+			print("TEXT ", result[0].text)
+		elif result[0].type == Type.LINK:
+			print("LINK ", result[0].url)
+		return result
+
 	static func parse(input: String) -> Array[Token]:
 		var tokens: Array[Token] = []
-		var i: int = 0
-		var n: int = input.length()
+		var i := 0
+		var n := input.length()
 		
 		while i < n:
-			var ch: String = input[i]
+			var ch := input[i]
 			if ch == '<':
-				var matched: bool = false
-				var j: int = i + 1
+				var matched := false
+				var j := i + 1
 				if j < n:
-					var next: String = input[j]
+					var next := input[j]
 					# Channel mention: <#123456>
 					if next == '#':
-						var id_end: int = _find_id_end(input, j + 1)
+						var id_end := _find_id_end(input, j + 1)
 						if id_end != -1 and id_end < n and input[id_end] == '>':
-							var id: String = input.substr(j + 1, id_end - (j + 1))
+							var id := input.substr(j + 1, id_end - (j + 1))
 							tokens.append(ChannelToken.new(id))
 							i = id_end + 1
 							matched = true
 					# User mention: <@123456>
 					elif next == '@':
-						var id_end: int = _find_id_end(input, j + 1)
+						var id_end := _find_id_end(input, j + 1)
 						if id_end != -1 and id_end < n and input[id_end] == '>':
-							var id: String = input.substr(j + 1, id_end - (j + 1))
+							var id := input.substr(j + 1, id_end - (j + 1))
 							tokens.append(UserToken.new(id))
 							i = id_end + 1
 							matched = true
 					# Static emoji: <:name:123456>
 					elif next == ':':
-						var name_start: int = j + 1
-						var name_end: int = _find_char(input, ':', name_start)
+						var name_start := j + 1
+						var name_end := _find_char(input, ':', name_start)
 						if name_end != -1:
-							var id_start: int = name_end + 1
-							var id_end: int = _find_id_end(input, id_start)
+							var id_start := name_end + 1
+							var id_end := _find_id_end(input, id_start)
 							if id_end != -1 and id_end < n and input[id_end] == '>':
-								var name: String = input.substr(name_start, name_end - name_start)
-								var id: String = input.substr(id_start, id_end - id_start)
+								var name := input.substr(name_start, name_end - name_start)
+								var id := input.substr(id_start, id_end - id_start)
 								tokens.append(EmojiToken.new(name, id, false))
 								i = id_end + 1
 								matched = true
 					# Animated emoji: <a:name:123456>
 					elif next == 'a' and j + 1 < n and input[j + 1] == ':':
-						var name_start: int = j + 2
-						var name_end: int = _find_char(input, ':', name_start)
+						var name_start := j + 2
+						var name_end := _find_char(input, ':', name_start)
 						if name_end != -1:
-							var id_start: int = name_end + 1
-							var id_end: int = _find_id_end(input, id_start)
+							var id_start := name_end + 1
+							var id_end := _find_id_end(input, id_start)
 							if id_end != -1 and id_end < n and input[id_end] == '>':
-								var name: String = input.substr(name_start, name_end - name_start)
-								var id: String = input.substr(id_start, id_end - id_start)
+								var name := input.substr(name_start, name_end - name_start)
+								var id := input.substr(id_start, id_end - id_start)
 								tokens.append(EmojiToken.new(name, id, true))
 								i = id_end + 1
 								matched = true
 				
 				if not matched:
-					# Not a valid token, treat '<' as plain text and consume until next '<' or end
-					var text_start: int = i
-					var next_lt: int = input.find('<', i + 1)
-					
+					# Not a valid token: treat '<' as plain text and consume until next '<' or end
+					var text_start := i
+					var next_lt := input.find('<', i + 1)
 					if next_lt == -1:
 						next_lt = n
-					
-					var text: String = input.substr(text_start, next_lt - text_start)
-					
+					var text := input.substr(text_start, next_lt - text_start)
 					if not text.is_empty():
-						tokens.append(TextToken.new(text))
+						# Process the text segment for links
+						tokens.append_array(_process_text_segment(text))
 					i = next_lt
 			else:
-				# Not a '<', accumulate plain text until next '<' or end
-				var text_start: int = i
-				var next_lt: int = input.find('<', i)
-				
+				# Accumulate plain text until next '<' or end
+				var text_start := i
+				var next_lt := input.find('<', i)
 				if next_lt == -1:
 					next_lt = n
-				
-				var text: String = input.substr(text_start, next_lt - text_start)
-				
+				var text := input.substr(text_start, next_lt - text_start)
 				if not text.is_empty():
-					tokens.append(TextToken.new(text))
-				
+					# Process the text segment for links
+					tokens.append_array(_process_text_segment(text))
 				i = next_lt
 		
 		return tokens
 
 	# Helper: find first occurrence of a character starting from `start`
 	static func _find_char(s: String, c: String, start: int) -> int:
-		for pos: int in range(start, s.length()):
+		for pos in range(start, s.length()):
 			if s[pos] == c:
 				return pos
 		return -1
 
-	# Helper: find the end of a digit sequence (first non‑digit) starting from `start`
-	# Returns -1 if no digits are found or if the string ends before any non‑digit
+	# Helper: find the first non‑digit after a sequence of digits starting from `start`
 	static func _find_id_end(s: String, start: int) -> int:
-		var pos: int = start
+		var pos := start
 		while pos < s.length() and s[pos].is_valid_int():
 			pos += 1
-		# If we moved at least one step and we are not at the end, return the first non‑digit index
 		if pos > start and pos < s.length():
 			return pos
 		return -1
 
+class BreakToken extends Token:
+	static var INSTANCE: BreakToken = BreakToken.new()
+	
+	func _init() -> void:
+		super(Type.BREAK)
 
 class TextToken extends Token:
 	var text: String
 	
 	func _init(_text: String) -> void:
+		super(Type.TEXT)
 		self.text = _text
 
-class ImageToken extends AbstractImageToken:
+class LinkToken extends Token:
+	var url: String
 	
 	func _init(_url: String) -> void:
-		super(Type.IMAGE, _url)
+		super(Type.LINK)
+		self.url = _url
 
 @abstract
 class AbstractImageToken extends Token:
@@ -207,6 +242,11 @@ class EmojiToken extends AbstractImageToken:
 		self.emoji_name = _emoji_name
 		self.emoji_id = _emoji_id
 		self.animated = _animated
+
+class ImageToken extends AbstractImageToken:
+	
+	func _init(_url: String) -> void:
+		super(Type.IMAGE, _url)
 
 class ChannelToken extends Token:
 	var channel_id: String

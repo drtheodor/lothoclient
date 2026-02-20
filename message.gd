@@ -6,19 +6,24 @@ extends Control
 @onready var label: RichTextLabel = $VBoxContainer/Content
 @onready var timeLabel: Label = $VBoxContainer/Author/Time
 
-@export var max_image_width: int = 640
+@export var max_image_width: int = 600
+@export var emoji_size: int = 24
 
 var message: Message
-var _pending: bool = false
+var _pending: bool
+
+func _ready() -> void:
+	self.label.meta_clicked.connect(func (meta: Variant) -> void: OS.shell_open(str(meta)))
 
 func set_message(_message: Message) -> void:
 	self.message = _message
+	
 	self._set_author(_message.author_name, _message.author_id, _message.author_avatar)
 	self._set_timestamp(_message.timestamp)
 	self._set_content(_message.tokens)
 
 func append_message(_message: Message) -> void:
-	self._append_content([Message.TextToken.new("\n")])
+	self._append_content([Message.BreakToken.INSTANCE])
 	self._append_content(_message.tokens)
 
 func _set_author(author_name: String, author_id: String, avatar_id: String) -> void:
@@ -45,10 +50,21 @@ func _append_content(tokens: Array[Message.Token]) -> void:
 	
 	for token: Message.Token in tokens:
 		match token.type:
+			Message.Token.Type.BREAK:
+				label.newline()
+			
 			Message.Token.Type.TEXT:
 				var text_token: Message.TextToken = token
 				label.append_text(str(text_token.text))
-				pass
+			
+			Message.Token.Type.LINK:
+				var link_token: Message.LinkToken = token
+				
+				label.push_color(Color.LIGHT_BLUE)
+				label.push_meta(link_token.url)
+				label.add_text(link_token.url)
+				label.pop()
+				label.pop()
 			
 			Message.Token.Type.IMAGE:
 				var image_token: Message.ImageToken = token
@@ -73,7 +89,7 @@ func _append_content(tokens: Array[Message.Token]) -> void:
 				var tex: ImageTexture = emoji_token.texture
 				var emoji_name: String = emoji_token.emoji_name
 				
-				label.add_image(tex, 48, 48, Color.WHITE, InlineAlignment.INLINE_ALIGNMENT_CENTER, Util.ZERO_RECT, null, false, emoji_name, false, false, emoji_name)
+				label.add_image(tex, emoji_size, emoji_size, Color.WHITE, InlineAlignment.INLINE_ALIGNMENT_CENTER, Util.ZERO_RECT, null, false, emoji_name, false, false, emoji_name)
 
 func _set_timestamp(timestamp: int) -> void:
 	var timezone_info: Dictionary = Time.get_time_zone_from_system()
