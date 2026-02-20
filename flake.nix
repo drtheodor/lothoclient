@@ -20,6 +20,7 @@
         ];
 
         buildInputs = with pkgs; [
+          wayland
           godot
 
           # zlibext
