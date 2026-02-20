@@ -54,6 +54,10 @@ func _append_content(tokens: Array[Message.Token]) -> void:
 				var image_token: Message.ImageToken = token
 				var tex: ImageTexture = image_token.texture
 				
+				if not tex:
+					print("Failed to load image by url", image_token.url)
+					continue
+				
 				var tex_size: Vector2 = tex.get_size()
 				var width: int = int(tex_size.x)
 				var height: int = int(tex_size.y)
