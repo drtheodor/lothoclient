@@ -3,14 +3,17 @@ class_name Message
 var author_name: String
 var author_id: String
 var author_avatar: String
+var nonce: String
 
 var timestamp: int
 var tokens: Array[Token]
 
-func _init(_author_name: String, _author_id: String, _author_avatar: String, _timestamp: int, _tokens: Array[Token]) -> void:
+func _init(_author_name: String, _author_id: String, _author_avatar: String, _timestamp: int, _nonce: String, _tokens: Array[Token]) -> void:
 	self.author_name = _author_name
 	self.author_id = _author_id
 	self.author_avatar = _author_avatar
+	self.nonce = _nonce
+	
 	self.timestamp = _timestamp
 	self.tokens = _tokens
 
@@ -28,6 +31,8 @@ static func from_json(data: Dictionary) -> Message:
 	var _author_id: String = author["id"]
 
 	var _timestamp: int = Time.get_unix_time_from_datetime_string(iso_timestamp)
+	
+	var _nonce: String = data.get("nonce", "")
 	
 	var _tokens: Array[Token] = Token.parse(content)
 	
@@ -51,7 +56,7 @@ static func from_json(data: Dictionary) -> Message:
 			else:
 				_tokens.append(TextToken.new("[file %s] " % url_attachment))
 	
-	return Message.new(_author_name, _author_id, _author_avatar, _timestamp, _tokens)
+	return Message.new(_author_name, _author_id, _author_avatar, _timestamp, _nonce, _tokens)
 
 class Token:
 	

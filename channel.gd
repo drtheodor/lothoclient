@@ -19,9 +19,10 @@ var _fetch_queued: bool = false
 # FIXME: this sucks
 var _request_mode: String = ""
 var _pending_user_id: String = ""
-var _first_load: bool = true
 
 func _ready() -> void:
+	self.message_input.grab_focus()
+	
 	if OS.get_environment("THEME") == "transparent":
 		self.get_tree().get_root().transparent_bg = true
 		
@@ -29,14 +30,16 @@ func _ready() -> void:
 		style.bg_color = Color.TRANSPARENT
 		self.add_theme_stylebox_override("panel", style)
 	
+	Discord.on_message.connect(self._on_message)
+	
 	http_request.request_completed.connect(_on_request_completed)
 
 	# Monitor scroll changes
 	scroll_container.get_v_scroll_bar().changed.connect(_on_scrollbar_changed)
 
 	# TODO: move api calls to `Discord`
-	_fetch_channel_name()
-	_fetch_messages()
+	self._fetch_channel_name()
+	self._fetch_messages()
 	#_start_polling()
 
 func _fetch_messages() -> void:
@@ -112,20 +115,22 @@ func _start_polling() -> void:
 	timer.timeout.connect(_fetch_messages)
 	add_child(timer)
 
-func _add_pending_message(text: String) -> void:
+func _add_pending_message(text: String, nonce: int) -> void:
 	var pending: UiMessage = MessageScene.instantiate()
 	vbox_container.add_child(pending)
 	
 	var message: Message = Message.new(
-		"You", "local", "", int(Time.get_unix_time_from_system()), [
+		"You", "local", "", Util.get_time_millis(), str(nonce), [
 		Message.TextToken.new(text)
 	])
 	
 	pending.set_pending(true)
 	pending.set_message(message)
 	
-	await get_tree().process_frame
-	scroll_to_bottom()
+	pending_messages[str(nonce)] = pending
+	
+	if _is_near_bottom():
+		scroll_to_bottom()
 
 # TODO: this should be handled inside `Discord`
 func _on_request_completed(result: int, _response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -162,13 +167,13 @@ func _on_request_completed(result: int, _response_code: int, _headers: PackedStr
 			channel_label.text = "@%s" % channel_name
 		_pending_user_id = ""
 		_request_mode = ""
-		if _fetch_queued:
-			_fetch_messages()
+		#if _fetch_queued:
+		#	_fetch_user_name()
 		return
 
 	if data is Array:
 		var messages: Array[Variant] = data
-		_on_message(messages)
+		_on_messages(messages)
 	else:
 		print("Response is not an array")
 		add_error_message("Invalid response format")
@@ -179,49 +184,49 @@ func _on_request_completed(result: int, _response_code: int, _headers: PackedStr
 	if _fetch_queued:
 		_fetch_messages()
 
-func _on_message(messages: Array[Variant]) -> void:
+var last_message: UiMessage
+var pending_messages: Dictionary[String, Node] = {}
+
+func _on_messages(messages: Array[Variant]) -> void:
 	messages.reverse()
-	var should_scroll: bool = _first_load or _is_near_bottom()
 
 	# Clear existing messages
 	for child: Node in vbox_container.get_children():
 		child.queue_free()
 
-	var last_message: UiMessage = null
+	self.last_message = null
 
 	# Add messages in chronological order (oldest first at top, newest at bottom)
 	for message_data: Dictionary in messages:
 		#print(message_data)
 			var message: Message = Message.from_json(message_data)
-			
-			if last_message and _should_group(last_message.message, message):
-				last_message.append_message(message)
-			else:
-				last_message = MessageScene.instantiate()
-				vbox_container.add_child(last_message)
-				
-				last_message.set_message(message)
-				
-				user_pref.text = message.author_name
-				
-				if message.author_avatar:
-					user_pref_avatar.texture = await Discord.get_avatar(message.author_id, message.author_avatar)
-				else:
-					user_pref_avatar.texture = null
-				
+			self._on_message(message, false)
 
-	# Wait for layout to update, then optionally scroll to bottom
-	await get_tree().process_frame
-	await get_tree().process_frame
-	if should_scroll:
-		scroll_to_bottom()
-	_first_load = false
+	scroll_to_bottom()
+
+func _on_message(message: Message, scroll: bool = true) -> void:
+	var pending: UiMessage = pending_messages.get(message.nonce)
+	
+	if pending:
+		pending.queue_free()
+	
+	if self.last_message and _should_group(last_message.message, message):
+		self.last_message.append_message(message)
+	else:
+		self.last_message = MessageScene.instantiate()
+		vbox_container.add_child(self.last_message)
+		
+		self.last_message.set_message(message)
+	
+	if scroll and _is_near_bottom():
+		self.scroll_to_bottom()
 
 func _is_near_bottom() -> bool:
 	var vbar: ScrollBar = scroll_container.get_v_scroll_bar()
 	if not vbar:
 		return true
-	return (vbar.max_value - scroll_container.scroll_vertical) < 50
+	
+	return (vbar.max_value - scroll_container.scroll_vertical) < 2000
 
 func _should_group(prev_message: Message, new_message: Message) -> bool:
 	return abs(prev_message.timestamp - new_message.timestamp) <= 60 * 10 * 1000 and prev_message.author_id == new_message.author_id
@@ -242,9 +247,12 @@ func _on_scrollbar_changed() -> void:
 
 func scroll_to_bottom() -> void:
 	await get_tree().process_frame
+	await get_tree().process_frame
+	
 	var vbar: ScrollBar = scroll_container.get_v_scroll_bar()
+	
 	if vbar:
-		scroll_container.scroll_vertical = int(vbar.max_value)
+		scroll_container.scroll_vertical = int(vbar.max_value) + 1
 	else:
 		# Calculate manually
 		var content: Node = scroll_container.get_child(0)
@@ -252,11 +260,9 @@ func scroll_to_bottom() -> void:
 			scroll_container.scroll_vertical = content.size.y - scroll_container.size.y
 
 func add_error_message(text: String) -> void:
-	var message_instance: Node = MessageScene.instantiate()
-	vbox_container.add_child(message_instance)
-	message_instance.set_content(text)
-	await get_tree().process_frame
-	scroll_to_bottom()
+	self._on_message(Message.new("GDiscord", "0", "https://theo.is-a.dev/favicon.png", Util.get_time_millis(), "", [
+		Message.TextToken.new(text)
+	]))
 
 func _on_code_edit_gui_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
@@ -266,13 +272,13 @@ func _on_code_edit_gui_input(event: InputEvent) -> void:
 				return
 
 			# Cancel the default behavior
-			accept_event()
+			message_input.accept_event()
 
 			if message_input.text.strip_edges().is_empty():
 				return
 
 			var text_to_send: String = message_input.text
 			message_input.text = ''
-			_add_pending_message(text_to_send)
-			Discord.send_message(Discord.channel, text_to_send)
-			_fetch_messages()
+			
+			var nonce: int = Discord.send_message(Discord.channel, text_to_send)
+			_add_pending_message(text_to_send, nonce)
