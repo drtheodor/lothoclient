@@ -16,9 +16,15 @@ func _ready() -> void:
 	var counter: int = 0
 	for line: String in lines:
 		counter += 1
-		if line.is_empty(): continue
+		if line.strip_edges().is_empty(): continue
+		if line.begins_with("#"): continue
+		
+		var comment_idx: int = line.find(" #")
+		if comment_idx:
+			line = line.substr(0, comment_idx)
 		
 		var parts: PackedStringArray = line.split("=", true, 1)
+		
 		if parts.size() != 2:
 			print("Bad .env: line %s" % counter)
 			continue
