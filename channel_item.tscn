@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cmc0037cvewbv"]
+
+[ext_resource type="Script" uid="uid://bv517k72u8kk5" path="res://channel_item.gd" id="1_ikl0i"]
+
+[node name="Button" type="Button" unique_id=972465957]
+offset_right = 8.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+text = "Channel Name"
+script = ExtResource("1_ikl0i")
