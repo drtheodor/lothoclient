@@ -153,6 +153,7 @@ text = "User"
 [node name="Main" type="VBoxContainer" parent="MarginContainer/HBoxContainer" unique_id=1412139361]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
 theme_override_constants/separation = 15
 
 [node name="TopPanel" type="Panel" parent="MarginContainer/HBoxContainer/Main" unique_id=1051353333]
