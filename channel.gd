@@ -86,8 +86,8 @@ func _add_pending_message(text: String, nonce: int) -> void:
 	var pending: UiMessage = MessageScene.instantiate()
 	message_list.add_child(pending)
 	
-	var message: Message = Message.new(
-		Discord.user.global_name, Discord.user.user_id, "", 
+	var message: Message = Message.with_user(
+		Discord.user, 
 		int(Time.get_unix_time_from_system()), str(nonce), [
 		Message.TextToken.new(text)
 	])
