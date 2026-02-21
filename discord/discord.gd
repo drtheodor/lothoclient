@@ -197,8 +197,9 @@ func fetch_messages(channel_id: String) -> Array[Message]:
 	var messages: Array = data
 	var result: Array[Message] = []
 	
-	for message: Variant in messages:
-		result.append(Message.from_json(message))
+	for raw_message: Variant in messages:
+		var message_dict: Dictionary = raw_message
+		result.append(Message.from_json(message_dict))
 	
 	return result
 
