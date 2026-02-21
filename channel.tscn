@@ -232,6 +232,11 @@ layout_mode = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Main" unique_id=1145187782]
 layout_mode = 2
 
+[node name="TypingStart" type="Label" parent="MarginContainer/HBoxContainer/Main/VBoxContainer" unique_id=1814076997]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+text = "Someone is typing..."
+
 [node name="NewMessageInput" type="CodeEdit" parent="MarginContainer/HBoxContainer/Main/VBoxContainer" unique_id=1149097292]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 46)
