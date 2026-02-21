@@ -1,15 +1,11 @@
 [gd_scene format=3 uid="uid://bjrnqpswwo47d"]
 
 [ext_resource type="Script" uid="uid://c2cfg4anvcnhw" path="res://channel.gd" id="1_vksbt"]
-[ext_resource type="Shader" uid="uid://c325vs7ce4r6a" path="res://avatar_circle.gdshader" id="2_p6rag"]
 [ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="3_uw2bi"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vksbt"]
 bg_color = Color(0.02745098, 0.02745098, 0.03529412, 1)
 corner_detail = 1
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_oecnv"]
-shader = ExtResource("2_p6rag")
 
 [node name="Panel" type="Panel" unique_id=538390015]
 anchors_preset = 15
@@ -143,7 +139,6 @@ grow_vertical = 2
 pivot_offset = Vector2(60, -72)
 
 [node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort" unique_id=1322383447]
-material = SubResource("ShaderMaterial_oecnv")
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_horizontal = 13
