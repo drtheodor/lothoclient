@@ -13,10 +13,10 @@ custom.py
 compile_commands.json
 
 # Ignore files generated for documentation
-/zlibext/src/gen
+/addons/zlibext/src/gen
 
 # Binaries
-/zlibext/bin/
+/addons/zlibext/bin/
 *.o
 *.os
 *.obj
