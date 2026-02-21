@@ -2,9 +2,12 @@
 
 [ext_resource type="Script" uid="uid://bv517k72u8kk5" path="res://channel_item.gd" id="1_ikl0i"]
 
-[node name="Button" type="Button" unique_id=972465957]
-offset_right = 8.0
-offset_bottom = 40.0
+[node name="ChannelItem" type="Button" unique_id=972465957]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 31.0
+grow_horizontal = 2
 size_flags_horizontal = 3
 text = "Channel Name"
+alignment = 0
 script = ExtResource("1_ikl0i")

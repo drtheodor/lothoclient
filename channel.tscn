@@ -1,10 +1,8 @@
 [gd_scene format=3 uid="uid://bjrnqpswwo47d"]
 
-[ext_resource type="PackedScene" uid="uid://c5lvwxx50r0vq" path="res://message.tscn" id="1_qkkds"]
 [ext_resource type="Script" uid="uid://c2cfg4anvcnhw" path="res://channel.gd" id="1_vksbt"]
 [ext_resource type="Shader" uid="uid://c325vs7ce4r6a" path="res://avatar_circle.gdshader" id="2_p6rag"]
 [ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="3_uw2bi"]
-[ext_resource type="PackedScene" uid="uid://cmc0037cvewbv" path="res://channel_item.tscn" id="4_uw2bi"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vksbt"]
 bg_color = Color(0.02745098, 0.02745098, 0.03529412, 1)
@@ -125,7 +123,7 @@ layout_mode = 2
 size_flags_horizontal = 2
 theme_override_constants/separation = 4
 
-[node name="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=268068189 instance=ExtResource("4_uw2bi")]
+[node name="ChannelItem" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=268068189 instance_placeholder="res://channel_item.tscn"]
 layout_mode = 2
 
 [node name="UserPref" type="Panel" parent="MarginContainer/HBoxContainer/Sidebar" unique_id=701961912]
@@ -189,7 +187,7 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 30
 metadata/_edit_use_anchors_ = true
 
-[node name="Message" parent="MarginContainer/HBoxContainer/Main/ScrollContainer/MessageList" unique_id=2052089132 instance=ExtResource("1_qkkds")]
+[node name="Message" parent="MarginContainer/HBoxContainer/Main/ScrollContainer/MessageList" unique_id=2052089132 instance_placeholder="res://message.tscn"]
 layout_mode = 2
 
 [node name="NewMessageInput" type="CodeEdit" parent="MarginContainer/HBoxContainer/Main" unique_id=1149097292]

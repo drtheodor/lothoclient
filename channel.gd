@@ -31,7 +31,7 @@ func _ready() -> void:
 	
 	Discord.on_message.connect(self._on_message)
 
-	self.message_input.grab_focus()
+	self.message_input.editable = false
 
 func _init_channels() -> void:
 	for child: Node in channel_list.get_children():
@@ -52,6 +52,8 @@ func _init_channel(channel_id: String) -> void:
 	
 func _on_channel_change(channel: Channel) -> void:
 	if _busy: return
+	
+	self.message_input.editable = true
 	
 	Discord.channel = channel.channel_id
 	
