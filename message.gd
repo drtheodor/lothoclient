@@ -6,7 +6,7 @@ extends Control
 @onready var label: RichTextLabel = $VBoxContainer/Content
 @onready var timeLabel: Label = $VBoxContainer/Author/Time
 
-@export var max_image_width: int = 600
+@export var max_image_width: int = 580
 @export var emoji_size: int = 24
 
 var message: Message
@@ -81,8 +81,15 @@ func _append_content(tokens: Array[Message.Token]) -> void:
 					var tex_scale: float = float(max_image_width) / width
 					width = max_image_width
 					height = int(height * tex_scale)
-					
-				label.add_image(tex, width, height, Color.WHITE, InlineAlignment.INLINE_ALIGNMENT_CENTER, Util.ZERO_RECT, true)
+				
+				var texture_rect: TextureRect = TextureRect.new()
+			
+				texture_rect.texture = tex
+				texture_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH
+				texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT
+				texture_rect.custom_minimum_size = Vector2(width, height)
+				texture_rect.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+				label.get_parent().add_child(texture_rect)
 			
 			Message.Token.Type.EMOJI:
 				var emoji_token: Message.EmojiToken = token

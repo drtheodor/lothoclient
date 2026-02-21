@@ -6,6 +6,7 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vksbt"]
 bg_color = Color(0.02745098, 0.02745098, 0.03529412, 1)
+corner_detail = 1
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_oecnv"]
 shader = ExtResource("2_p6rag")
@@ -66,7 +67,6 @@ size_flags_horizontal = 4
 size_flags_vertical = 6
 
 [node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Panel/ScrollContainer/VBoxContainer2/HBoxContainer" unique_id=456644801]
-material = SubResource("ShaderMaterial_oecnv")
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_horizontal = 13
@@ -216,7 +216,6 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
 [node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Panel2/VBoxContainer2/HBoxContainer14" unique_id=105679074]
-material = SubResource("ShaderMaterial_oecnv")
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 0

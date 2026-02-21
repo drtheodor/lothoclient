@@ -1,11 +1,7 @@
 [gd_scene format=3 uid="uid://c5lvwxx50r0vq"]
 
 [ext_resource type="Script" uid="uid://c6d1howur8mgk" path="res://message.gd" id="1_d26o2"]
-[ext_resource type="Shader" uid="uid://c325vs7ce4r6a" path="res://avatar_circle.gdshader" id="2_06ydw"]
 [ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="3_13d81"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_13d81"]
-shader = ExtResource("2_06ydw")
 
 [sub_resource type="LabelSettings" id="LabelSettings_d26o2"]
 line_spacing = 0.0
@@ -19,13 +15,14 @@ font_color = Color(0.6598761, 0.6598762, 0.65987617, 1)
 shadow_size = 0
 
 [node name="Message" type="HBoxContainer" unique_id=918810476]
-offset_right = 1152.0
-offset_bottom = 50.0
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 54.0
+grow_horizontal = 2
 theme_override_constants/separation = 8
 script = ExtResource("1_d26o2")
 
 [node name="Avatar" type="TextureRect" parent="." unique_id=279053992]
-material = SubResource("ShaderMaterial_13d81")
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 0
