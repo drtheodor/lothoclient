@@ -120,7 +120,7 @@ horizontal_scroll_mode = 0
 [node name="ChannelList" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer" unique_id=1909385764]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
 [node name="ChannelItem" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=268068189 instance_placeholder="res://channel_item.tscn"]
