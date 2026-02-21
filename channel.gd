@@ -16,6 +16,8 @@ const ChannelItemScene: PackedScene = preload("res://channel_item.tscn")
 
 @onready var channels: PackedStringArray = OS.get_environment("CHANNELS").split(",")
 
+var _busy: bool
+
 func _ready() -> void:
 	self._init_channels()
 	
@@ -49,6 +51,8 @@ func _init_channel(channel_id: String) -> void:
 		ui_channel.clicked.connect(_on_channel_change)
 	
 func _on_channel_change(channel: Channel) -> void:
+	if _busy: return
+	
 	Discord.channel = channel.channel_id
 	
 	self.channel_label.text = channel.channel_name
@@ -57,6 +61,8 @@ func _on_channel_change(channel: Channel) -> void:
 	self._fetch_messages()
 
 func _fetch_messages() -> void:
+	self._busy = true
+	
 	var messages: Array[Message] = await Discord.fetch_messages(Discord.channel)
 	messages.reverse()
 	
@@ -71,6 +77,7 @@ func _fetch_messages() -> void:
 		self._on_message(message, false)
 
 	self.scroll_to_bottom()
+	self._busy = false
 
 func _add_pending_message(text: String, nonce: int) -> void:
 	var pending: UiMessage = MessageScene.instantiate()
