@@ -15,6 +15,13 @@ corner_radius_bottom_right = 100
 corner_radius_bottom_left = 100
 corner_detail = 20
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5h2ww"]
+bg_color = Color(0.8781866, 0.2812874, 0.17693636, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
 [sub_resource type="LabelSettings" id="LabelSettings_d26o2"]
 line_spacing = 0.0
 outline_size = 1
@@ -24,7 +31,8 @@ shadow_size = 0
 line_spacing = 0.0
 font_size = 12
 font_color = Color(0.6598761, 0.6598762, 0.65987617, 1)
-shadow_size = 0
+shadow_size = 3
+shadow_color = Color(0, 0, 0, 0.08235294)
 
 [node name="Message" type="HBoxContainer" unique_id=918810476]
 offset_right = 166.0
@@ -48,6 +56,14 @@ layout_mode = 2
 size_flags_vertical = 0
 texture = ExtResource("3_13d81")
 expand_mode = 2
+
+[node name="StatusDot" type="Panel" parent="Rounder" unique_id=232601416]
+z_index = 1
+custom_minimum_size = Vector2(13, 13)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_5h2ww")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=328149225]
 layout_mode = 2

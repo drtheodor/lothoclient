@@ -9,7 +9,7 @@ const BASE_URL: String = "https://discord.com/api/v9"
 @onready var scroll_container: ScrollContainer = $MarginContainer/HBoxContainer/Main/ScrollContainer
 @onready var channel_label: Label = $MarginContainer/HBoxContainer/Main/TopPanel/ChannelLabel
 @onready var user_pref: Label = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Name
-@onready var user_pref_avatar: TextureRect = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Avatar
+@onready var user_pref_avatar: TextureRect = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Rounder/Avatar
 
 const MessageScene: PackedScene = preload("res://message.tscn")
 const ChannelItemScene: PackedScene = preload("res://channel_item.tscn")

@@ -7,6 +7,30 @@
 bg_color = Color(0.02745098, 0.02745098, 0.03529412, 1)
 corner_detail = 1
 
+[sub_resource type="Theme" id="Theme_vksbt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cpih4"]
+bg_color = Color(0.36120003, 0.38184002, 0.43, 1)
+border_color = Color(0.8, 0.8, 0.8, 0)
+border_blend = true
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+corner_detail = 20
+shadow_color = Color(0, 0, 0, 1)
+shadow_size = 2
+shadow_offset = Vector2(60.26, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uw2bi"]
+bg_color = Color(0.8781866, 0.2812874, 0.17693636, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[sub_resource type="Theme" id="Theme_cpih4"]
+
 [node name="Panel" type="Panel" unique_id=538390015]
 anchors_preset = 15
 anchor_right = 1.0
@@ -138,13 +162,32 @@ offset_bottom = 20.0
 grow_vertical = 2
 pivot_offset = Vector2(60, -72)
 
-[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort" unique_id=1322383447]
-custom_minimum_size = Vector2(40, 40)
+[node name="Rounder" type="PanelContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort" unique_id=1756092194]
+clip_children = 2
+z_index = 1
+clip_contents = true
 layout_mode = 2
-size_flags_horizontal = 13
+size_flags_horizontal = 4
 size_flags_vertical = 4
+theme = SubResource("Theme_vksbt")
+theme_override_styles/panel = SubResource("StyleBoxFlat_cpih4")
+
+[node name="StatusDot" type="Panel" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Rounder" unique_id=622019559]
+z_index = 1
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_uw2bi")
+
+[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Rounder" unique_id=617771321]
+show_behind_parent = true
+clip_contents = true
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+theme = SubResource("Theme_cpih4")
 texture = ExtResource("3_uw2bi")
-expand_mode = 1
+expand_mode = 2
 
 [node name="Name" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort" unique_id=2061364797]
 layout_mode = 2

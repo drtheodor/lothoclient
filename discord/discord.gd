@@ -120,6 +120,7 @@ func _on_gateway_message(socket: WebSocketPeer, some_json: Variant) -> void:
 				self.user = User.from_json(_user)
 				
 				var _guilds: Array = some_data["guilds"]
+				
 				var _private_channels: Array = some_data["private_channels"]
 				var _users: Array = some_data["users"]
 				
