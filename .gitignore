@@ -16,16 +16,14 @@ compile_commands.json
 /zlibext/src/gen
 
 # Binaries
+/zlibext/bin/
 *.o
 *.os
-*.so
-*.dll
 *.obj
 *.bc
 *.pyc
 *.dblite
 *.pdb
-*.lib
 *.config
 *.creator
 *.creator.user
@@ -33,8 +31,6 @@ compile_commands.json
 *.includes
 *.idb
 *.exp
-
-!/addons/godotgif/bin/**
 
 # Other stuff
 *.log
