@@ -77,7 +77,6 @@ func _init(default_headers: PackedStringArray = []) -> void:
 	self._default_headers = default_headers
 
 func request(url: String, custom_headers: PackedStringArray = PackedStringArray(), method: HTTPClient.Method = HTTPClient.Method.METHOD_GET, request_data: String = "") -> Response:
-	print(url)
 	var http: HTTPRequest = HTTPRequest.new()
 	self.add_child(http)
 	

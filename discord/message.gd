@@ -17,6 +17,9 @@ func _init(_author_name: String, _author_id: String, _author_avatar: String, _ti
 	self.timestamp = _timestamp
 	self.tokens = _tokens
 
+static func with_user(user: User,  _timestamp: int, _nonce: String, _tokens: Array[Token]) -> Message:
+	return Message.new(user.global_name, user.user_id, user.avatar_id, _timestamp, _nonce, _tokens)
+
 static func from_json(data: Dictionary) -> Message:
 	var content: String = data["content"]
 	var author: Dictionary = data["author"]

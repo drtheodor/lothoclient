@@ -86,14 +86,13 @@ func _add_pending_message(text: String, nonce: int) -> void:
 	var pending: UiMessage = MessageScene.instantiate()
 	message_list.add_child(pending)
 	
-	var message: Message = Message.new(
-		Discord.user.global_name, Discord.user.user_id, "", 
-		int(Time.get_unix_time_from_system()), str(nonce), [
-		Message.TextToken.new(text)
-	])
+	var message: Message = Message.with_user(
+		Discord.user, int(Time.get_unix_time_from_system()), 
+		str(nonce), [Message.TextToken.new(text)]
+	)
 	
 	pending.set_pending(true)
-	pending.set_message(message)
+	pending.add_message(message)
 	
 	pending_messages[str(nonce)] = pending
 	
@@ -113,13 +112,11 @@ func _on_message(message: Message, scroll: bool = true) -> void:
 	if pending:
 		pending.queue_free()
 	
-	if self.last_message and _should_group(last_message.message, message):
-		self.last_message.append_message(message)
-	else:
+	if not self.last_message or not self._should_group(last_message.messages[-1], message):
 		self.last_message = MessageScene.instantiate()
 		message_list.add_child(self.last_message)
-		
-		self.last_message.set_message(message)
+	
+	self.last_message.add_message(message)
 	
 	if scroll and _is_near_bottom():
 		self.scroll_to_bottom()

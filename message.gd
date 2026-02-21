@@ -1,30 +1,34 @@
 class_name UiMessage
 extends Control
 
+const MessageContent: PackedScene = preload("res://message_content.tscn")
+
 @onready var avatar: TextureRect = $Rounder/Avatar
 @onready var author: Label = $VBoxContainer/Author/Name
-@onready var label: RichTextLabel = $VBoxContainer/Content
-@onready var timeLabel: Label = $VBoxContainer/Author/Time
+@onready var content_base: Container = $VBoxContainer
+@onready var time_label: Label = $VBoxContainer/Author/Time
 
 @export var max_image_width: int = 580
 @export var emoji_size: int = 24
 
-var message: Message
+var label: RichTextLabel
+
+var messages: Array[Message] = []
 var _pending: bool
 
-func _ready() -> void:
-	self.label.meta_clicked.connect(func (meta: Variant) -> void: OS.shell_open(str(meta)))
-
-func set_message(_message: Message) -> void:
-	self.message = _message
+func add_message(message: Message) -> void:
+	if not self.label:
+		self._set_author(message.author_name, message.author_id, message.author_avatar)
+		self._set_timestamp(message.timestamp)
 	
-	self._set_author(_message.author_name, _message.author_id, _message.author_avatar)
-	self._set_timestamp(_message.timestamp)
-	self._set_content(_message.tokens)
-
-func append_message(_message: Message) -> void:
-	self._append_content([Message.BreakToken.INSTANCE])
-	self._append_content(_message.tokens)
+	self.messages.append(message)
+	
+	self.label = MessageContent.instantiate()
+	self.label.meta_clicked.connect(func (meta: Variant) -> void: OS.shell_open(str(meta)))
+	
+	self.content_base.add_child(label)
+	
+	self._add_content(message.tokens)
 
 func _set_author(author_name: String, author_id: String, avatar_id: String) -> void:
 	self.author.text = author_name
@@ -34,11 +38,7 @@ func _set_author(author_name: String, author_id: String, avatar_id: String) -> v
 	else:
 		avatar.texture = null
 
-func _set_content(tokens: Array[Message.Token]) -> void:
-	label.clear()
-	self._append_content(tokens)
-
-func _append_content(tokens: Array[Message.Token]) -> void:
+func _add_content(tokens: Array[Message.Token]) -> void:
 	# TODO: coroutine it properly
 	for token: Message.Token in tokens:
 		if token is Message.AbstractImageToken:
@@ -115,7 +115,7 @@ func _set_timestamp(timestamp: int) -> void:
 	if local["year"] != now["year"]:
 		text = "%04d-" % local["year"] + text
 
-	timeLabel.text = text
+	time_label.text = text
 
 func set_pending(pending: bool) -> void:
 	self._pending = pending
