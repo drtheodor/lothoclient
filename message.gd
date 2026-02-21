@@ -27,7 +27,6 @@ func add_message(message: Message) -> void:
 	self.label.meta_clicked.connect(func (meta: Variant) -> void: OS.shell_open(str(meta)))
 	
 	self.content_base.add_child(label)
-	
 	self._add_content(message.tokens)
 
 func _set_author(author_name: String, author_id: String, avatar_id: String) -> void:
@@ -82,7 +81,7 @@ func _add_content(tokens: Array[Message.Token]) -> void:
 				var texture_rect: TextureRect = TextureRect.new()
 			
 				texture_rect.texture = tex
-				texture_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH
+				texture_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 				texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT
 				texture_rect.custom_minimum_size = Vector2(width, height)
 				texture_rect.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
