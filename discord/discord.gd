@@ -185,6 +185,23 @@ func get_avatar(user_id: String, avatar_id: String) -> ImageTexture:
 	var url: String = "%s/avatars/%s/%s.webp?size=64" % [CDN_URL, user_id, avatar_id]
 	return await self.image_cache.get_or_request(url, "webp")
 
+func fetch_messages(channel_id: String) -> Array[Message]:
+	var url: String = "%s/channels/%s/messages" % [BASE_URL, channel_id]
+	var data: Variant = await Discord.http.request_json_or_null(url, ["Authorization: " + Discord.token])
+	
+	if not data or data is not Array:
+		return [Message.new("GDiscord", "0", "https://theo.is-a.dev/favicon.png", Util.get_time_millis(), "", [
+			Message.TextToken.new("Failed to load messages")
+		])]
+	
+	var messages: Array = data
+	var result: Array[Message] = []
+	
+	for message: Variant in messages:
+		result.append(Message.from_json(message))
+	
+	return result
+
 func get_channel(channel_id: String) -> Channel:
 	var res: Channel = self.channel_cache.get(channel_id)
 	
