@@ -190,10 +190,10 @@ func _on_gateway_message(socket: WebSocketPeer, some_json: Variant) -> void:
 				if OS.is_debug_build():
 					print("Unhandled event ", json["t"])
 
-func get_avatar(user_id: String, avatar_id: String) -> ImageTexture:
+func get_avatar(user_id: String, avatar_id: String, size: int = 64) -> ImageTexture:
 	if not avatar_id: return null
 	
-	var url: String = "%s/avatars/%s/%s.webp?size=64" % [CDN_URL, user_id, avatar_id]
+	var url: String = "%s/avatars/%s/%s.webp?size=%s" % [CDN_URL, user_id, avatar_id, size]
 	return await self.image_cache.get_or_request(url, "webp")
 
 func fetch_messages(channel_id: String) -> Array[Message]:
