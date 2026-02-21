@@ -2,14 +2,14 @@ extends Control
 
 const BASE_URL: String = "https://discord.com/api/v9"
 
-# TODO: move all requests to `Discord`
-@onready var vbox_container: VBoxContainer = %MessageList
-@onready var scroll_container: ScrollContainer = $MarginContainer/HBoxContainer/Main/ScrollContainer
+@onready var message_list: VBoxContainer = %MessageList
+@onready var channel_list: VBoxContainer = %ChannelList
 @onready var message_input: CodeEdit = %NewMessageInput
+
+@onready var scroll_container: ScrollContainer = $MarginContainer/HBoxContainer/Main/ScrollContainer
 @onready var channel_label: Label = $MarginContainer/HBoxContainer/Main/TopPanel/ChannelLabel
 @onready var user_pref: Label = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Name
 @onready var user_pref_avatar: TextureRect = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Avatar
-@onready var channel_list: VBoxContainer = %ChannelList
 
 const MessageScene: PackedScene = preload("res://message.tscn")
 const ChannelItemScene: PackedScene = preload("res://channel_item.tscn")
@@ -57,21 +57,27 @@ func _on_channel_change(channel: Channel) -> void:
 	self._fetch_messages()
 
 func _fetch_messages() -> void:
-	var url: String = "%s/channels/%s/messages" % [BASE_URL, Discord.channel]
-	var data: Variant = await Discord.http.request_json_or_null(url, ["Authorization: " + Discord.token])
+	var messages: Array[Message] = await Discord.fetch_messages(Discord.channel)
+	messages.reverse()
 	
-	if not data:
-		add_error_message("Failed to load messages")
-	elif data is Array:
-		var messages: Array = data
-		self._on_messages(messages)
+	# Clear existing messages
+	for child: Node in message_list.get_children():
+		child.queue_free()
+
+	self.last_message = null
+
+	# Add messages in chronological order (oldest first at top, newest at bottom)
+	for message: Message in messages:
+		self._on_message(message, false)
+
+	self.scroll_to_bottom()
 
 func _add_pending_message(text: String, nonce: int) -> void:
 	var pending: UiMessage = MessageScene.instantiate()
-	vbox_container.add_child(pending)
+	message_list.add_child(pending)
 	
 	var message: Message = Message.new(
-		"You", "local", "", Util.get_time_millis(), str(nonce), [
+		"You", "local", "", int(Time.get_unix_time_from_system()), str(nonce), [
 		Message.TextToken.new(text)
 	])
 	
@@ -86,22 +92,6 @@ func _add_pending_message(text: String, nonce: int) -> void:
 var last_message: UiMessage
 var pending_messages: Dictionary[String, Node] = {}
 
-func _on_messages(messages: Array[Variant]) -> void:
-	messages.reverse()
-
-	# Clear existing messages
-	for child: Node in vbox_container.get_children():
-		child.queue_free()
-
-	self.last_message = null
-
-	# Add messages in chronological order (oldest first at top, newest at bottom)
-	for message_data: Dictionary in messages:
-		var message: Message = Message.from_json(message_data)
-		self._on_message(message, false)
-
-	scroll_to_bottom()
-
 func _on_message(message: Message, scroll: bool = true) -> void:
 	var pending: UiMessage = pending_messages.get(message.nonce)
 	
@@ -112,7 +102,7 @@ func _on_message(message: Message, scroll: bool = true) -> void:
 		self.last_message.append_message(message)
 	else:
 		self.last_message = MessageScene.instantiate()
-		vbox_container.add_child(self.last_message)
+		message_list.add_child(self.last_message)
 		
 		self.last_message.set_message(message)
 	
