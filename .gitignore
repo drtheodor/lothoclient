@@ -19,6 +19,7 @@ compile_commands.json
 *.o
 *.os
 *.so
+*.dll
 *.obj
 *.bc
 *.pyc
@@ -32,6 +33,8 @@ compile_commands.json
 *.includes
 *.idb
 *.exp
+
+!/addons/godotgif/bin/**
 
 # Other stuff
 *.log
