@@ -50,14 +50,3 @@ size_flags_vertical = 1
 text = "8:30 PM"
 label_settings = SubResource("LabelSettings_06ydw")
 vertical_alignment = 1
-
-[node name="Content" type="RichTextLabel" parent="VBoxContainer" unique_id=1564674076]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-focus_mode = 2
-text = "Content"
-fit_content = true
-scroll_active = false
-selection_enabled = true
-metadata/_edit_use_anchors_ = true
