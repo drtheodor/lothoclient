@@ -120,24 +120,8 @@ func _on_gateway_message(socket: WebSocketPeer, some_json: Variant) -> void:
 				self.user = User.from_json(_user)
 				
 				var _guilds: Array = some_data["guilds"]
+				var _users: Array = some_data["users"]
 				var _private_channels: Array = some_data["private_channels"]
-				
-				#for key: Variant in e.keys():
-					#if key == "read_state": continue
-					#if key == "relationships": continue
-					#if key == "guilds": continue
-					#if key == "merged_members": continue
-					#if key == "_trace": continue
-					#if key == "sessions": continue
-					#if key == "experiments": continue
-					#if key == "user_guild_settings": continue
-					#if key == "users": continue
-					#if key == "private_channels": continue
-					#if key == "connected_accounts": continue
-					#if key == "apex_experiments": continue
-					#if key == "guild_experiments": continue
-					#if key == "user_settings_proto": continue
-					#print(key, ": ", e[key])
 				
 				var all_session: Variant = some_data["sessions"][0]
 				
