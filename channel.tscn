@@ -185,13 +185,20 @@ metadata/_edit_use_anchors_ = true
 [node name="Message" parent="MarginContainer/HBoxContainer/Main/ScrollContainer/MessageList" unique_id=2052089132 instance_placeholder="res://message.tscn"]
 layout_mode = 2
 
-[node name="NewMessageInput" type="CodeEdit" parent="MarginContainer/HBoxContainer/Main" unique_id=1149097292]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Main" unique_id=1511520614]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="NewMessageInput" type="CodeEdit" parent="MarginContainer/HBoxContainer/Main/VBoxContainer" unique_id=1149097292]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
+size_flags_horizontal = 3
 placeholder_text = "Message in #channel"
 backspace_deletes_composite_character_enabled = true
 wrap_mode = 1
+scroll_fit_content_height = true
 
 [node name="Panel2" type="Panel" parent="MarginContainer/HBoxContainer" unique_id=1120447410]
 custom_minimum_size = Vector2(200, 0)
@@ -222,4 +229,4 @@ expand_mode = 1
 layout_mode = 2
 text = "Godot"
 
-[connection signal="gui_input" from="MarginContainer/HBoxContainer/Main/NewMessageInput" to="." method="_on_code_edit_gui_input"]
+[connection signal="gui_input" from="MarginContainer/HBoxContainer/Main/VBoxContainer/NewMessageInput" to="." method="_on_code_edit_gui_input"]
