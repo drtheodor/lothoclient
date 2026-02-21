@@ -169,19 +169,7 @@ func _on_gateway_message(socket: WebSocketPeer, some_json: Variant) -> void:
 						"client_launch_id": UUID.v4()
 					}
 				}))
-				
-			"PRESENCE_UPDATE":
-				var some_data: Variant = json["d"]
-				var _user: Dictionary = some_data["user"]
-				self.user = User.from_json(_user)
-				
-			"PASSIVE_UPDATE":
-				var some_data: Variant = json["d"]
-				print(some_data)
 			
-			"PASSIVE_UPDATE_V2":
-				print("PASSIVE UPDATE V2 HERE!")
-				
 			"MESSAGE_CREATE":
 				var some_data: Variant = json["d"]
 				
