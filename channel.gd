@@ -29,6 +29,7 @@ func _ready() -> void:
 		
 		self.add_theme_stylebox_override("panel", style)
 	
+	Discord.on_profile.connect(self._on_profile)
 	Discord.on_message.connect(self._on_message)
 
 	self.message_input.editable = false
@@ -86,7 +87,8 @@ func _add_pending_message(text: String, nonce: int) -> void:
 	message_list.add_child(pending)
 	
 	var message: Message = Message.new(
-		"You", "local", "", int(Time.get_unix_time_from_system()), str(nonce), [
+		Discord.user.global_name, Discord.user.user_id, "", 
+		int(Time.get_unix_time_from_system()), str(nonce), [
 		Message.TextToken.new(text)
 	])
 	
@@ -97,6 +99,10 @@ func _add_pending_message(text: String, nonce: int) -> void:
 	
 	if _is_near_bottom():
 		scroll_to_bottom()
+
+func _on_profile(user: User) -> void:
+	self.user_pref.text = user.global_name
+	self.user_pref_avatar.texture = await Discord.get_avatar(user.user_id, user.avatar_id)
 
 var last_message: UiMessage
 var pending_messages: Dictionary[String, Node] = {}

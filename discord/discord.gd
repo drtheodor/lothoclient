@@ -34,6 +34,7 @@ var message_cache: Dictionary[String, Array] = {}
 
 var image_cache: ImageCache = ImageCache.new(http)
 
+signal on_profile(user: User)
 signal on_message(message: Message)
 
 func _ready() -> void:
@@ -108,12 +109,36 @@ func _on_gateway_message(socket: WebSocketPeer, some_json: Variant) -> void:
 		self._last_heartbeat = Util.get_time_millis()
 	
 	if not some_json or some_json is not Dictionary:
-		print("Received malformed JSON from gateway", some_json)
+		push_error("Received malformed JSON from gateway", some_json)
 	else:
 		var json: Dictionary = some_json
 		match json["t"]:
 			"READY":
 				var some_data: Variant = json["d"]
+				
+				var _user: Dictionary = some_data["user"]
+				self.user = User.from_json(_user)
+				
+				var _guilds: Array = some_data["guilds"]
+				var _private_channels: Array = some_data["private_channels"]
+				
+				#for key: Variant in e.keys():
+					#if key == "read_state": continue
+					#if key == "relationships": continue
+					#if key == "guilds": continue
+					#if key == "merged_members": continue
+					#if key == "_trace": continue
+					#if key == "sessions": continue
+					#if key == "experiments": continue
+					#if key == "user_guild_settings": continue
+					#if key == "users": continue
+					#if key == "private_channels": continue
+					#if key == "connected_accounts": continue
+					#if key == "apex_experiments": continue
+					#if key == "guild_experiments": continue
+					#if key == "user_settings_proto": continue
+					#print(key, ": ", e[key])
+				
 				var all_session: Variant = some_data["sessions"][0]
 				
 				socket.send_text(JSON.stringify({
@@ -164,7 +189,7 @@ func _on_gateway_message(socket: WebSocketPeer, some_json: Variant) -> void:
 				var some_data: Variant = json["d"]
 				
 				if not some_data or some_data is not Dictionary:
-					print("'MESSAGE_CREATE' event is invalid: ", some_data)
+					push_error("'MESSAGE_CREATE' event is invalid: ", some_data)
 					return
 				
 				var message_json: Dictionary = some_data
@@ -265,6 +290,12 @@ func _generate_snowflake() -> int:
 static var token: String:
 	get:
 		return OS.get_environment("TOKEN")
+
+var user: User:
+	set(val):
+		user = val
+		
+		self.on_profile.emit(self.user)
 
 var channel: String:
 	set(val):
