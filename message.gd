@@ -27,7 +27,9 @@ func add_message(message: Message) -> void:
 	self.label.meta_clicked.connect(func (meta: Variant) -> void: OS.shell_open(str(meta)))
 	
 	self.content_base.add_child(label)
-	self._add_content(message.tokens)
+	
+	# FIXME: temp await fix since there's no Promise.all :(
+	await self._add_content(message.tokens)
 
 func _set_author(author_name: String, author_id: String, avatar_id: String) -> void:
 	self.author.text = author_name
@@ -45,6 +47,7 @@ func _add_content(tokens: Array[Message.Token]) -> void:
 			
 			if not image_token.texture:
 				var ext: String = Url.get_extension(image_token.url)
+				# FIXME: temp await fix since there's no Promise.all :(
 				image_token.texture = await Discord.image_cache.get_or_request(image_token.url, ext)
 	
 	for token: Message.Token in tokens:

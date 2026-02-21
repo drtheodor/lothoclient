@@ -116,7 +116,8 @@ func _on_message(message: Message, scroll: bool = true) -> void:
 		self.last_message = MessageScene.instantiate()
 		message_list.add_child(self.last_message)
 	
-	self.last_message.add_message(message)
+	# FIXME: temp await fix since there's no Promise.all :(
+	await self.last_message.add_message(message)
 	
 	if scroll and _is_near_bottom():
 		self.scroll_to_bottom()
