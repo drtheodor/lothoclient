@@ -1,7 +1,7 @@
 class_name UiMessage
 extends Control
 
-@onready var avatar: TextureRect = $Avatar
+@onready var avatar: TextureRect = $Rounder/Avatar
 @onready var author: Label = $VBoxContainer/Author/Name
 @onready var label: RichTextLabel = $VBoxContainer/Content
 @onready var timeLabel: Label = $VBoxContainer/Author/Time

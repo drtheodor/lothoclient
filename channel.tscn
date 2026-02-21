@@ -191,6 +191,8 @@ custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 placeholder_text = "Message in #channel"
 backspace_deletes_composite_character_enabled = true
+wrap_mode = 1
+scroll_smooth = true
 
 [node name="Panel2" type="Panel" parent="MarginContainer/HBoxContainer" unique_id=1120447410]
 custom_minimum_size = Vector2(200, 0)
