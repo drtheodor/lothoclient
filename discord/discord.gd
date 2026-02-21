@@ -171,9 +171,10 @@ func _on_gateway_message(socket: WebSocketPeer, some_json: Variant) -> void:
 				if message_json["channel_id"] == self.channel:
 					self.on_message.emit(Message.from_json(message_json))
 			_:
+				@warning_ignore("unsafe_call_argument")
 				if not self._heartbeat_interval and int(json["op"]) == 10: # HELLO
 					self._heartbeat_interval = json["d"]["heartbeat_interval"]
-					print(self._heartbeat_interval)
+					print("Heartbeat Interval: ", self._heartbeat_interval)
 					return
 				
 				if OS.is_debug_build():
