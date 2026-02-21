@@ -95,12 +95,6 @@ class Token:
 			if plain.length() > 0:
 				result.append(TextToken.new(plain))
 		
-		if result[0].type == Type.BREAK:
-			print("BREAK")
-		elif result[0].type == Type.TEXT:
-			print("TEXT ", result[0].text)
-		elif result[0].type == Type.LINK:
-			print("LINK ", result[0].url)
 		return result
 
 	static func parse(input: String) -> Array[Token]:
