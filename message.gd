@@ -50,9 +50,6 @@ func _add_content(tokens: Array[Message.Token]) -> void:
 	
 	for token: Message.Token in tokens:
 		match token.type:
-			Message.Token.Type.BREAK:
-				label.newline()
-			
 			Message.Token.Type.TEXT:
 				var text_token: Message.TextToken = token
 				label.append_text(str(text_token.text))

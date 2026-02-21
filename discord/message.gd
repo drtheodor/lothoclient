@@ -64,7 +64,7 @@ static func from_json(data: Dictionary) -> Message:
 class Token:
 	
 	enum Type {
-		BREAK, TEXT, LINK, IMAGE, USER, CHANNEL, EMOJI
+		TEXT, LINK, IMAGE, USER, CHANNEL, EMOJI
 	}
 	
 	var type: Type
@@ -195,12 +195,6 @@ class Token:
 		if pos > start and pos < s.length():
 			return pos
 		return -1
-
-class BreakToken extends Token:
-	static var INSTANCE: BreakToken = BreakToken.new()
-	
-	func _init() -> void:
-		super(Type.BREAK)
 
 class TextToken extends Token:
 	var text: String
