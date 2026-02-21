@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dqtnfkxwnxpbf"]
+
+[node name="Content" type="RichTextLabel" unique_id=1220745781]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+focus_mode = 2
+fit_content = true
+scroll_active = false
+selection_enabled = true
+metadata/_edit_use_anchors_ = true
