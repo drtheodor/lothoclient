@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://cg1uyx1jgqk3k"]
+
+[ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="1_4d44e"]
+[ext_resource type="Script" uid="uid://dogw8cwa6q15" path="res://guild_item.gd" id="2_v43x8"]
+
+[node name="GuildItem" type="Button" unique_id=156196709]
+custom_minimum_size = Vector2(45, 45)
+offset_right = 45.0
+offset_bottom = 45.0
+icon = ExtResource("1_4d44e")
+icon_alignment = 1
+expand_icon = true
+script = ExtResource("2_v43x8")

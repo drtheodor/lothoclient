@@ -5,6 +5,7 @@ const BASE_URL: String = "https://discord.com/api/v9"
 @onready var message_list: VBoxContainer = %MessageList
 @onready var channel_list: VBoxContainer = %ChannelList
 @onready var message_input: CodeEdit = %NewMessageInput
+@onready var guild_list: Container = %GuildList
 
 @onready var scroll_container: ScrollContainer = $MarginContainer/HBoxContainer/Main/ScrollContainer
 @onready var channel_label: Label = $MarginContainer/HBoxContainer/Main/TopPanel/ChannelLabel
@@ -13,14 +14,11 @@ const BASE_URL: String = "https://discord.com/api/v9"
 
 const MessageScene: PackedScene = preload("res://message.tscn")
 const ChannelItemScene: PackedScene = preload("res://channel_item.tscn")
-
-@onready var channels: PackedStringArray = OS.get_environment("CHANNELS").split(",")
+const GuildItemScene: PackedScene = preload("res://guild_item.tscn")
 
 var _busy: bool
 
 func _ready() -> void:
-	self._init_channels()
-	
 	if OS.get_environment("THEME") == "transparent":
 		self.get_tree().get_root().transparent_bg = true
 		
@@ -29,28 +27,58 @@ func _ready() -> void:
 		
 		self.add_theme_stylebox_override("panel", style)
 	
-	Discord.on_profile.connect(self._on_profile)
+	Discord.on_ready.connect(self._on_discord_ready)
 	Discord.on_message.connect(self._on_message)
 
 	self.message_input.editable = false
 
-func _init_channels() -> void:
+func _init_guild_channels(channels: Array[Channel.GuildChannel]) -> void:
 	for child: Node in channel_list.get_children():
 		child.queue_free()
 	
-	for channel_id: String in channels:
-		self._init_channel(channel_id)
-
-func _init_channel(channel_id: String) -> void:
-	var channel: Channel = await Discord.get_channel(channel_id)
+	var categories: Dictionary[String, Array] = {}
+	var sorted_channels: Array[Channel] = []
 	
-	if channel:
-		var ui_channel: Node = ChannelItemScene.instantiate()
-		channel_list.add_child(ui_channel)
+	for channel: Channel.GuildChannel in channels:
+		if not channel.parent_id:
+			sorted_channels.append(channel)
+		else:
+			categories.get_or_add(channel.parent_id, []).append(channel)
+	
+	sorted_channels.sort_custom(
+		func(a: Channel.GuildChannel, b: Channel.GuildChannel) -> bool: 
+			return (a.position + 100 * int(a.channel_type == Channel.Type.CATEGORY)) < (b.position + 100 * int(b.channel_type == Channel.Type.CATEGORY))
+	)
+	
+	for channel: Channel.GuildChannel in sorted_channels:
+		self._init_channel(channel)
 		
-		ui_channel.set_channel(channel)
-		ui_channel.clicked.connect(_on_channel_change)
+		if channel.channel_type == Channel.Type.CATEGORY:
+			var children: Variant = categories.get(channel.channel_id)
+			
+			if children:
+				children.sort_custom(
+					func(a: Channel.GuildChannel, b: Channel.GuildChannel) -> bool:
+						return (a.position + 100 * int(a.channel_type == Channel.Type.VOICE)) < (b.position + 100 * int(a.channel_type == Channel.Type.VOICE))
+				)
+				
+				for child_channel: Channel in categories[channel.channel_id]:
+					self._init_channel(child_channel)
+
+func _init_channel(channel: Channel) -> void:
+	if channel.channel_type == Channel.Type.CATEGORY:
+		var category_label: Label = Label.new()
+		category_label.text = channel.channel_name
+		
+		channel_list.add_spacer(false) # TODO figure out if this even does anything
+		channel_list.add_child(category_label)
+		return
+	var ui_channel: Node = ChannelItemScene.instantiate()
+	channel_list.add_child(ui_channel)
 	
+	ui_channel.set_channel(channel)
+	ui_channel.clicked.connect(_on_channel_change)
+
 func _on_channel_change(channel: Channel) -> void:
 	if _busy: return
 	
@@ -99,9 +127,22 @@ func _add_pending_message(text: String, nonce: int) -> void:
 	if _is_near_bottom():
 		scroll_to_bottom()
 
-func _on_profile(user: User) -> void:
-	self.user_pref.text = user.global_name
-	self.user_pref_avatar.texture = await Discord.get_avatar(user.user_id, user.avatar_id)
+func _on_discord_ready() -> void:
+	print(Discord.guild_cache.values())
+	
+	self.user_pref.text = Discord.user.global_name
+	self.user_pref_avatar.texture = await Discord.get_avatar(Discord.user.user_id, Discord.user.avatar_id)
+
+	for guild: Guild in Discord.guild_cache.values():
+		var guild_item: UiGuildItem = GuildItemScene.instantiate()
+		guild_item.clicked.connect(self._on_guild_change)
+		
+		self.guild_list.add_child(guild_item)
+		
+		guild_item.set_guild(guild)
+
+func _on_guild_change(guild: Guild) -> void:
+	self._init_guild_channels(guild.channels)
 
 var last_message: UiMessage
 var pending_messages: Dictionary[String, Node] = {}
@@ -130,7 +171,8 @@ func _is_near_bottom() -> bool:
 	return (vbar.max_value - scroll_container.scroll_vertical) < 2000
 
 func _should_group(prev_message: Message, new_message: Message) -> bool:
-	return abs(prev_message.timestamp - new_message.timestamp) <= 60 * 10 * 1000 and prev_message.author_id == new_message.author_id
+	# TODO: figure out why the fuck its being funny about timestamps
+	return abs(prev_message.timestamp - new_message.timestamp) <= 6 * 1000 and prev_message.author_id == new_message.author_id
 
 func scroll_to_bottom() -> void:
 	await get_tree().process_frame
@@ -147,7 +189,7 @@ func scroll_to_bottom() -> void:
 			scroll_container.scroll_vertical = content.size.y - scroll_container.size.y
 
 func add_error_message(text: String) -> void:
-	self._on_message(Message.new("GDiscord", "0", "https://theo.is-a.dev/favicon.png", Util.get_time_millis(), "", [
+	self._on_message(Message.new("GDiscord", "643945264868098049", "c6a249645d46209f337279cd2ca998c7", Util.get_time_millis(), "", [
 		Message.TextToken.new(text)
 	]))
 

@@ -28,13 +28,14 @@ var _gateway: Gateway = Gateway.new()
 var _heartbeat_interval: int
 var _last_heartbeat: int = -1
 
+var guild_cache: Dictionary[String, Guild] = {}
 var channel_cache: Dictionary[String, Channel] = {}
 #                                    Array[Message]
 var message_cache: Dictionary[String, Array] = {}
 
 var image_cache: ImageCache = ImageCache.new(http)
 
-signal on_profile(user: User)
+signal on_ready()
 signal on_message(message: Message)
 
 func _ready() -> void:
@@ -120,6 +121,17 @@ func _on_gateway_message(socket: WebSocketPeer, some_json: Variant) -> void:
 				self.user = User.from_json(_user)
 				
 				var _guilds: Array = some_data["guilds"]
+				# roles, stickers, threads, channels, 
+				# properties { name, icon, banner }, 
+				# member_count, large, emojis
+				for raw_guild: Variant in _guilds:
+					var guild: Guild = Guild.from_json(raw_guild)
+					self.guild_cache[guild.guild_id] = guild
+				
+					for channel: Channel in guild.channels:
+						self.channel_cache[channel.channel_id] = channel
+				
+				self.on_ready.emit()
 				
 				var _private_channels: Array = some_data["private_channels"]
 				var _users: Array = some_data["users"]
@@ -194,6 +206,12 @@ func get_avatar(user_id: String, avatar_id: String, size: int = 64) -> ImageText
 	if not avatar_id: return null
 	
 	var url: String = "%s/avatars/%s/%s.webp?size=%s" % [CDN_URL, user_id, avatar_id, size]
+	return await self.image_cache.get_or_request(url, "webp")
+
+func get_guild_icon(guild_id: String, guild_avatar: String, size: int = 64) -> ImageTexture:
+	if not guild_avatar: return null
+	
+	var url: String = "%s/icons/%s/%s.webp?size=%s" % [CDN_URL, guild_id, guild_avatar, size]
 	return await self.image_cache.get_or_request(url, "webp")
 
 func fetch_messages(channel_id: String) -> Array[Message]:
@@ -276,11 +294,7 @@ static var token: String:
 	get:
 		return OS.get_environment("TOKEN")
 
-var user: User:
-	set(val):
-		user = val
-		
-		self.on_profile.emit(self.user)
+var user: User
 
 var channel: String:
 	set(val):

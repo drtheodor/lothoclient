@@ -30,7 +30,9 @@ static func from_json(data: Dictionary) -> Message:
 	var iso_timestamp: String = data["timestamp"]
 	#var edited_timestamp: int = message_data["edited_timestamp"]
 	var _author_name: String = author["global_name"] if author["global_name"] else author["username"] # I don't know why this fixes it but it doesl
-	var _author_avatar: String = author["avatar"]
+	var _author_avatar: Variant = author.get("avatar")
+	_author_avatar = _author_avatar if _author_avatar else ""
+	
 	var _author_id: String = author["id"]
 
 	var _timestamp: int = Time.get_unix_time_from_datetime_string(iso_timestamp)

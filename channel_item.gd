@@ -8,6 +8,10 @@ func _ready() -> void:
 
 func set_channel(channel: Channel) -> void:
 	self._channel = channel
-	self.text = "#" + channel.channel_name
+	
+	if channel is Channel.GuildChannel and channel.channel_type == Channel.Type.VOICE:
+		self.text = "🔊 " + channel.channel_name
+	else:
+		self.text = "# " + channel.channel_name
 
 signal clicked(channel: Channel)
