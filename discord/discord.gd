@@ -5,6 +5,8 @@ const WEBSOCKET_URL: String = "wss://gateway.discord.gg/?encoding=json&v=9&compr
 const CDN_URL: String = "https://cdn.discordapp.com"
 const BASE_URL: String = "https://discord.com/api/v9"
 
+const GATEWAY_POLL_DELAY: int = 100 # in ms
+
 const MASQUERADE_OS: String = "Linux"
 const MASQUERADE_LOCALE: String = "en-US"
 
@@ -51,9 +53,14 @@ func _ready() -> void:
 		print("Connecting to Discord Gateway")
 	else:
 		push_error("Failed to connect to Discord Gateway: ", err)
-
-func _process(_delta: float) -> void:
-	self._gateway.poll()
+	
+	var poll_timer: Timer = Timer.new()
+	poll_timer.autostart = true
+	poll_timer.one_shot = false
+	poll_timer.wait_time = float(GATEWAY_POLL_DELAY) / 1000
+	poll_timer.timeout.connect(self._gateway.poll)
+	
+	self.add_child(poll_timer)
 
 func _on_gateway_connected(socket: WebSocketPeer) -> void:
 	print("> Sending handshake packet.")
