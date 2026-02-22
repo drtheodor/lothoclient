@@ -53,7 +53,6 @@ class GuildChannel extends Channel:
 			4:
 				_type = Type.CATEGORY
 			_:
-				print("Unknown channel type: ", data["type"])
 				_type = Type.UNKNOWN
 		
 		var _parent_id: Variant = data.get("parent_id")

@@ -1,7 +1,5 @@
 extends Control
 
-const BASE_URL: String = "https://discord.com/api/v9"
-
 @onready var message_list: VBoxContainer = %MessageList
 @onready var channel_list: VBoxContainer = %ChannelList
 @onready var message_input: CodeEdit = %NewMessageInput
@@ -36,34 +34,8 @@ func _init_guild_channels(channels: Array[Channel.GuildChannel]) -> void:
 	for child: Node in channel_list.get_children():
 		child.queue_free()
 	
-	var categories: Dictionary[String, Array] = {}
-	var sorted_channels: Array[Channel] = []
-	
 	for channel: Channel.GuildChannel in channels:
-		if not channel.parent_id:
-			sorted_channels.append(channel)
-		else:
-			categories.get_or_add(channel.parent_id, []).append(channel)
-	
-	sorted_channels.sort_custom(
-		func(a: Channel.GuildChannel, b: Channel.GuildChannel) -> bool: 
-			return (a.position + 100 * int(a.channel_type == Channel.Type.CATEGORY)) < (b.position + 100 * int(b.channel_type == Channel.Type.CATEGORY))
-	)
-	
-	for channel: Channel.GuildChannel in sorted_channels:
 		self._init_channel(channel)
-		
-		if channel.channel_type == Channel.Type.CATEGORY:
-			var children: Variant = categories.get(channel.channel_id)
-			
-			if children:
-				children.sort_custom(
-					func(a: Channel.GuildChannel, b: Channel.GuildChannel) -> bool:
-						return (a.position + 100 * int(a.channel_type == Channel.Type.VOICE)) < (b.position + 100 * int(a.channel_type == Channel.Type.VOICE))
-				)
-				
-				for child_channel: Channel in categories[channel.channel_id]:
-					self._init_channel(child_channel)
 
 func _init_channel(channel: Channel) -> void:
 	if channel.channel_type == Channel.Type.CATEGORY:
@@ -73,6 +45,7 @@ func _init_channel(channel: Channel) -> void:
 		channel_list.add_spacer(false) # TODO figure out if this even does anything
 		channel_list.add_child(category_label)
 		return
+	
 	var ui_channel: Node = ChannelItemScene.instantiate()
 	channel_list.add_child(ui_channel)
 	
@@ -128,8 +101,6 @@ func _add_pending_message(text: String, nonce: int) -> void:
 		scroll_to_bottom()
 
 func _on_discord_ready() -> void:
-	print(Discord.guild_cache.values())
-	
 	self.user_pref.text = Discord.user.global_name
 	self.user_pref_avatar.texture = await Discord.get_avatar(Discord.user.user_id, Discord.user.avatar_id)
 

@@ -15,17 +15,41 @@ func _init(_guild_id: String, _guild_name: String, _guild_icon: String, _channel
 static func from_json(data: Dictionary) -> Guild:
 	var id: String = data["id"]
 	var props: Variant = data["properties"]
-	
 	var name: Variant = props["name"]
 	
 	var icon: Variant = props["icon"]
 	icon = icon if icon else ""
 	
-	var channels: Array[Channel.GuildChannel] = []
+	var _channels: Array[Channel.GuildChannel] = []
+	var categories: Dictionary[String, Array] = {}
 	
 	for raw_channel: Variant in data["channels"]:
-		channels.append(Channel.GuildChannel.from_json(raw_channel))
+		var channel: Channel.GuildChannel = Channel.GuildChannel.from_json(raw_channel)
+		
+		if not channel.parent_id:
+			_channels.append(channel)
+		else:
+			categories.get_or_add(channel.parent_id, []).append(channel)
 	
-	return Guild.new(id, name, icon, channels)
+	_channels.sort_custom(_sort_orphans)
 	
+	var sorted_channels: Array[Channel.GuildChannel] = []
 	
+	for channel: Channel.GuildChannel in _channels:
+		sorted_channels.append(channel)
+		if channel.channel_type == Channel.Type.CATEGORY:
+			var children: Variant = categories.get(channel.channel_id)
+			
+			if children:
+				children.sort_custom(_sort_children)
+				sorted_channels.append_array(children)
+	
+	return Guild.new(id, name, icon, sorted_channels)
+	
+static func _sort_orphans(a: Channel.GuildChannel, b: Channel.GuildChannel) -> bool:
+	return (a.position + 100 * int(a.channel_type == Channel.Type.CATEGORY)) < (
+		b.position + 100 * int(b.channel_type == Channel.Type.CATEGORY))
+
+static func _sort_children(a: Channel.GuildChannel, b: Channel.GuildChannel) -> bool:
+	return (a.position + 100 * int(a.channel_type == Channel.Type.VOICE)) < (
+		b.position + 100 * int(b.channel_type == Channel.Type.VOICE))
