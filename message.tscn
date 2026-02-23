@@ -61,6 +61,7 @@ texture = ExtResource("3_13d81")
 expand_mode = 2
 
 [node name="StatusDot" type="Panel" parent="Rounder" unique_id=232601416]
+visible = false
 z_index = 1
 custom_minimum_size = Vector2(13, 13)
 layout_mode = 2

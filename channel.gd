@@ -12,6 +12,7 @@ extends Control
 
 const MessageScene: PackedScene = preload("res://message.tscn")
 const ChannelItemScene: PackedScene = preload("res://channel_item.tscn")
+const ChannelCategoryItemScene: PackedScene = preload("res://channel_category_item.tscn")
 const GuildItemScene: PackedScene = preload("res://guild_item.tscn")
 
 var _busy: bool
@@ -34,23 +35,22 @@ func _init_guild_channels(channels: Array[Channel.GuildChannel]) -> void:
 	for child: Node in channel_list.get_children():
 		child.queue_free()
 	
+	var last_category: FoldableContainer
 	for channel: Channel.GuildChannel in channels:
-		self._init_channel(channel)
-
-func _init_channel(channel: Channel) -> void:
-	if channel.channel_type == Channel.Type.CATEGORY:
-		var category_label: Label = Label.new()
-		category_label.text = channel.channel_name
+		var ui_channel: Node
+		if channel.channel_type == Channel.Type.CATEGORY:
+			ui_channel = ChannelCategoryItemScene.instantiate()
+			last_category = ui_channel
+		else:
+			ui_channel = ChannelItemScene.instantiate()
+			ui_channel.clicked.connect(_on_channel_change)
 		
-		channel_list.add_spacer(false) # TODO figure out if this even does anything
-		channel_list.add_child(category_label)
-		return
-	
-	var ui_channel: Node = ChannelItemScene.instantiate()
-	channel_list.add_child(ui_channel)
-	
-	ui_channel.set_channel(channel)
-	ui_channel.clicked.connect(_on_channel_change)
+		if ui_channel != last_category:
+			last_category.add_node(ui_channel)
+		else:
+			channel_list.add_child(ui_channel)
+		
+		ui_channel.set_channel(channel)
 
 func _on_channel_change(channel: Channel) -> void:
 	if _busy: return

@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://c057d20hlvgvn"]
+
+[ext_resource type="Script" uid="uid://d2fiuhok5yiod" path="res://channel_category_item.gd" id="1_p33lj"]
+
+[node name="ChannelCategoryItem" type="FoldableContainer" unique_id=1704411717]
+title = "Category Name"
+title_text_overrun_behavior = 3
+script = ExtResource("1_p33lj")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=181560405]
+layout_mode = 2

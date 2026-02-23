@@ -114,9 +114,14 @@ horizontal_scroll_mode = 0
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 4
+
+[node name="ChannelItem2" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=972465957 instance_placeholder="res://channel_item.tscn"]
+layout_mode = 2
 
 [node name="ChannelItem" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=268068189 instance_placeholder="res://channel_item.tscn"]
+layout_mode = 2
+
+[node name="ChannelCategoryItem" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=1704411717 instance_placeholder="res://channel_category_item.tscn"]
 layout_mode = 2
 
 [node name="UserPref" type="Panel" parent="MarginContainer/HBoxContainer/Sidebar" unique_id=701961912]
@@ -201,6 +206,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="TypingStart" type="Label" parent="MarginContainer/HBoxContainer/Main/VBoxContainer" unique_id=1814076997]
+visible = false
 layout_mode = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
 text = "Someone is typing..."
