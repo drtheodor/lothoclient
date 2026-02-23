@@ -54,7 +54,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_13d81")
 
 [node name="Avatar" type="TextureRect" parent="Rounder" unique_id=279053992]
 clip_contents = true
-custom_minimum_size = Vector2(45, 45)
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 0
 texture = ExtResource("3_13d81")

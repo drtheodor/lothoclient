@@ -56,23 +56,15 @@ theme_override_constants/margin_bottom = 8
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Panel" type="Panel" parent="MarginContainer/HBoxContainer" unique_id=58261866]
+[node name="Panel" type="PanelContainer" parent="MarginContainer/HBoxContainer" unique_id=116323826]
 custom_minimum_size = Vector2(46, 0)
 layout_mode = 2
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/Panel" unique_id=141855357]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 0.5
-offset_top = 4.0
-offset_right = -0.5
-offset_bottom = -3.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 follow_focus = true
 horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
 
 [node name="GuildList" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Panel/ScrollContainer" unique_id=185210723]
 unique_name_in_owner = true
@@ -88,14 +80,12 @@ size_flags_horizontal = 4
 theme_override_constants/separation = 8
 metadata/_edit_use_anchors_ = true
 
-[node name="Search" type="Panel" parent="MarginContainer/HBoxContainer/Sidebar" unique_id=762271128]
+[node name="Search" type="PanelContainer" parent="MarginContainer/HBoxContainer/Sidebar" unique_id=2054655699]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/Search" unique_id=1809852755]
-layout_mode = 0
-offset_right = 80.0
-offset_bottom = 84.0
+layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/Search/VBoxContainer" unique_id=683082796]
 layout_mode = 2
@@ -166,7 +156,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_uw2bi")
 [node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Rounder" unique_id=617771321]
 show_behind_parent = true
 clip_contents = true
-custom_minimum_size = Vector2(30, 30)
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 theme = SubResource("Theme_cpih4")
 texture = ExtResource("3_uw2bi")
@@ -182,17 +172,12 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.01
 theme_override_constants/separation = 15
 
-[node name="TopPanel" type="Panel" parent="MarginContainer/HBoxContainer/Main" unique_id=1051353333]
+[node name="TopPanel" type="PanelContainer" parent="MarginContainer/HBoxContainer/Main" unique_id=1530775365]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 
 [node name="ChannelLabel" type="Label" parent="MarginContainer/HBoxContainer/Main/TopPanel" unique_id=1188352396]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 text = "Channel Name"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -231,6 +216,7 @@ scroll_smooth = true
 scroll_fit_content_height = true
 
 [node name="Panel2" type="Panel" parent="MarginContainer/HBoxContainer" unique_id=1120447410]
+visible = false
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
