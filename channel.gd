@@ -113,7 +113,7 @@ func _add_pending_message(text: String, nonce: int) -> void:
 	message.nonce = str(nonce)
 	message.tokens = [Message.TextToken.new(text)]
 	
-	pending.set_pending(true)
+	pending.set_pending()
 	pending.add_message(message)
 	
 	pending_messages[str(nonce)] = pending
@@ -180,7 +180,7 @@ func _is_near_bottom() -> bool:
 
 func _should_group(prev_message: Message, new_message: Message) -> bool:
 	# TODO: figure out why the fuck its being funny about timestamps
-	return abs(prev_message.timestamp - new_message.timestamp) <= 6 * 1000 and prev_message.author_id == new_message.author_id
+	return not new_message.referenced and abs(prev_message.timestamp - new_message.timestamp) <= 6 * 1000 and prev_message.author_id == new_message.author_id
 
 func scroll_to_bottom() -> void:
 	await get_tree().process_frame

@@ -1,20 +1,15 @@
 class_name UiMessage
 extends Control
 
+const MessageReplyingTo: PackedScene = preload("res://message_replying_to.tscn")
 const MessageContent: PackedScene = preload("res://message_content.tscn")
 
-@onready var avatar: TextureRect = $Rounder/Avatar
-@onready var author: Label = $VBoxContainer/Author/Name
-@onready var content_base: Container = $VBoxContainer
-@onready var time_label: Label = $VBoxContainer/Author/Time
+const MAX_IMAGE_WIDTH: int = 580
+const EMOJI_SIZE: int = 24
 
-@export var max_image_width: int = 580
-@export var emoji_size: int = 24
-
-var label: Control
+var label: UiTokenizedLabel
 
 var messages: Array[Message] = []
-var _pending: bool
 
 signal mouse_entered_msg(msg_label: Control, message: Message)
 
@@ -35,82 +30,25 @@ func add_message(message: Message) -> void:
 	new_label.meta_clicked.connect(func (meta: Variant) -> void: OS.shell_open(str(meta)))
 	
 	self.label = new_label
-	self.content_base.add_child(self.label)
+	%ContentBase.add_child(self.label)
+	
+	if message.referenced:
+		var header: UiMessageReplyingTo = MessageReplyingTo.instantiate()
+		header.set_message(message.referenced)
+		
+		self.add_child(header)
+		self.move_child(header, 0)
 	
 	# FIXME: temp await fix since there's no Promise.all :(
-	if message.referenced:
-		var extra_tokens: Array[Message.Token] = [Message.TextToken.new("╭── Replying to @%s: " % message.referenced.author_name)]
-		extra_tokens.append_array(message.referenced.tokens)
-		extra_tokens.append(Message.TextToken.new("\n"))
-		self._add_content(extra_tokens)
-	
-	await self._add_content(message.tokens)
+	await self.label.from_tokens(message.tokens, MAX_IMAGE_WIDTH, EMOJI_SIZE)
 
 func _set_author(author_name: String, author_id: String, avatar_id: String) -> void:
-	self.author.text = author_name
+	%Name.text = author_name
 
 	if author_id and avatar_id:
-		avatar.texture = await Discord.get_avatar(author_id, avatar_id)
+		%Avatar.texture = await Discord.get_avatar(author_id, avatar_id)
 	else:
-		avatar.texture = null
-
-func _add_content(tokens: Array[Message.Token]) -> void:
-	# TODO: coroutine it properly
-	for token: Message.Token in tokens:
-		if token is Message.AbstractImageToken:
-			var image_token: Message.AbstractImageToken = token
-			
-			if not image_token.texture:
-				var ext: String = Url.get_extension(image_token.url)
-				# FIXME: temp await fix since there's no Promise.all :(
-				image_token.texture = await Discord.image_cache.get_or_request(image_token.url, ext)
-	
-	for token: Message.Token in tokens:
-		match token.type:
-			Message.Token.Type.TEXT:
-				var text_token: Message.TextToken = token
-				label.append_text(str(text_token.text))
-			
-			Message.Token.Type.LINK:
-				var link_token: Message.LinkToken = token
-				
-				label.push_color(Color.LIGHT_BLUE)
-				label.push_meta(link_token.url)
-				label.add_text(link_token.url)
-				label.pop()
-				label.pop()
-			
-			Message.Token.Type.IMAGE:
-				var image_token: Message.ImageToken = token
-				var tex: ImageTexture = image_token.texture
-				
-				if not tex:
-					print("Failed to load image by url", image_token.url)
-					continue
-				
-				var tex_size: Vector2 = tex.get_size()
-				var width: int = int(tex_size.x)
-				var height: int = int(tex_size.y)
-				if width > max_image_width:
-					var tex_scale: float = float(max_image_width) / width
-					width = max_image_width
-					height = int(height * tex_scale)
-				
-				var texture_rect: TextureRect = TextureRect.new()
-			
-				texture_rect.texture = tex
-				texture_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
-				texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT
-				texture_rect.custom_minimum_size = Vector2(width, height)
-				texture_rect.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-				label.get_parent().add_child(texture_rect)
-			
-			Message.Token.Type.EMOJI:
-				var emoji_token: Message.EmojiToken = token
-				var tex: ImageTexture = emoji_token.texture
-				var emoji_name: String = emoji_token.emoji_name
-				
-				label.add_image(tex, emoji_size, emoji_size, Color.WHITE, InlineAlignment.INLINE_ALIGNMENT_CENTER, Util.ZERO_RECT, null, false, emoji_name, false, false, emoji_name)
+		%Avatar.texture = null
 
 func _set_timestamp(timestamp: int) -> void:
 	var timezone_info: Dictionary = Time.get_time_zone_from_system()
@@ -129,10 +67,7 @@ func _set_timestamp(timestamp: int) -> void:
 	if local["year"] != now["year"]:
 		text = "%04d-" % local["year"] + text
 
-	time_label.text = text
+	%Time.text = text
 
-func set_pending(pending: bool) -> void:
-	self._pending = pending
-	
-	var alpha: float = 0.6 if pending else 1.0
-	self.modulate = Color(1, 1, 1, alpha)
+func set_pending() -> void:
+	self.modulate = Color(1, 1, 1, 0.6)

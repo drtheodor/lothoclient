@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://dqtnfkxwnxpbf"]
 
+[ext_resource type="Script" uid="uid://c3ludtohgp2vi" path="res://tokenized_label.gd" id="1_okd77"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wwyii"]
 bg_color = Color(0.6, 0.6, 0.6, 0.19607843)
 
@@ -12,4 +14,5 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_wwyii")
 fit_content = true
 scroll_active = false
 selection_enabled = true
+script = ExtResource("1_okd77")
 metadata/_edit_use_anchors_ = true
