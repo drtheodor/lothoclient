@@ -16,7 +16,7 @@ static func system_message(text: String) -> Message:
 	message.author_name = "GDiscord"
 	message.author_id = "643945264868098049"
 	message.author_avatar = "c6a249645d46209f337279cd2ca998c7"
-	message.timestamp = Util.get_time_millis()
+	message.timestamp = int(Time.get_unix_time_from_system())
 	message.tokens = [Message.TextToken.new(text)]
 	
 	return message
