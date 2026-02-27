@@ -39,7 +39,7 @@ func add_message(message: Message) -> void:
 	
 	# FIXME: temp await fix since there's no Promise.all :(
 	if message.referenced:
-		var extra_tokens: Array[Message.Token] = [Message.TextToken.new(" Replying to @%s: " % message.referenced.author_name)]
+		var extra_tokens: Array[Message.Token] = [Message.TextToken.new("╭── Replying to @%s: " % message.referenced.author_name)]
 		extra_tokens.append_array(message.referenced.tokens)
 		extra_tokens.append(Message.TextToken.new("\n"))
 		self._add_content(extra_tokens)
