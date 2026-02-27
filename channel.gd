@@ -64,7 +64,7 @@ func _init_guild_channels(channels: Array[Channel.GuildChannel]) -> void:
 			ui_channel = ChannelItemScene.instantiate()
 			ui_channel.clicked.connect(_on_channel_change)
 		
-		if ui_channel != last_category:
+		if ui_channel != last_category and last_category:
 			last_category.add_node(ui_channel)
 		else:
 			channel_list.add_child(ui_channel)
@@ -122,9 +122,6 @@ func _add_pending_message(text: String, nonce: int) -> void:
 		scroll_to_bottom()
 
 func _on_discord_ready() -> void:
-	self.user_pref.text = Discord.user.global_name
-	self.user_pref_avatar.texture = await Discord.get_avatar(Discord.user.user_id, Discord.user.avatar_id)
-
 	for guild: Guild in Discord.guild_cache.values():
 		var guild_item: UiGuildItem = GuildItemScene.instantiate()
 		guild_item.clicked.connect(self._on_guild_change)
@@ -132,6 +129,9 @@ func _on_discord_ready() -> void:
 		self.guild_list.add_child(guild_item)
 		
 		guild_item.set_guild(guild)
+	
+	self.user_pref.text = Discord.user.global_name
+	self.user_pref_avatar.texture = await Discord.get_avatar(Discord.user.user_id, Discord.user.avatar_id)
 
 func _on_guild_change(guild: Guild) -> void:
 	self._init_guild_channels(guild.channels)
