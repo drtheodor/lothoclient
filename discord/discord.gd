@@ -135,12 +135,12 @@ func _on_gateway_message(socket: WebSocketPeer, some_json: Variant) -> void:
 				# roles, stickers, threads, channels, 
 				# properties { name, icon, banner }, 
 				# member_count, large, emojis
-				for raw_guild: Variant in _guilds:
+				for raw_guild: Dictionary in _guilds:
 					var guild: Guild = Guild.from_json(raw_guild)
 					self.guild_cache[guild.guild_id] = guild
 				
-					for channel: Channel in guild.channels:
-						self.channel_cache[channel.channel_id] = channel
+					for guild_channel: Channel in guild.channels:
+						self.channel_cache[guild_channel.channel_id] = guild_channel
 				
 				self.on_ready.emit()
 				

@@ -44,8 +44,10 @@ class GuildChannel extends Channel:
 		var _channel_name: String = data["name"]
 		var _channel_id: String = data["id"]
 		
-		var _type: Type 
-		match data.get("type", 0) as int:
+		var _type: Type
+		
+		var raw_type: int = data.get("type", 0)
+		match raw_type:
 			0:
 				_type = Type.TEXT
 			2:
@@ -55,9 +57,7 @@ class GuildChannel extends Channel:
 			_:
 				_type = Type.UNKNOWN
 		
-		var _parent_id: Variant = data.get("parent_id")
-		_parent_id = _parent_id if _parent_id else ""
+		var _parent_id: String = data["parent_id"] if data.get("parent_id") else ""
 		
 		var _position: int = data["position"]
-		
 		return GuildChannel.new(_channel_id, _channel_name, _type, _parent_id, _position)

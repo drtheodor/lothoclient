@@ -43,10 +43,8 @@ static func from_json(data: Dictionary) -> Message:
 	var _author_avatar: Variant = author.get("avatar")
 	_author_avatar = _author_avatar if _author_avatar else ""
 	
-	var _referenced: Variant = data.get("referenced_message", {})
-	
-	if _referenced:
-		_referenced = Message.from_json(_referenced)
+	var referenced_message: Dictionary = data.get("referenced_message", {})
+	var _referenced: Message = Message.from_json(referenced_message) if referenced_message else null
 
 	var _timestamp: int = Time.get_unix_time_from_datetime_string(iso_timestamp)
 	var _nonce: String = data.get("nonce", "")

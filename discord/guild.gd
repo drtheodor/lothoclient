@@ -15,15 +15,13 @@ func _init(_guild_id: String, _guild_name: String, _guild_icon: String, _channel
 static func from_json(data: Dictionary) -> Guild:
 	var id: String = data["id"]
 	var props: Variant = data["properties"]
-	var name: Variant = props["name"]
-	
-	var icon: Variant = props["icon"]
-	icon = icon if icon else ""
+	var name: String = props["name"]
+	var icon: String = props["icon"] if props["icon"] else ""
 	
 	var _channels: Array[Channel.GuildChannel] = []
 	var categories: Dictionary[String, Array] = {}
 	
-	for raw_channel: Variant in data["channels"]:
+	for raw_channel: Dictionary in data["channels"]:
 		var channel: Channel.GuildChannel = Channel.GuildChannel.from_json(raw_channel)
 		
 		if not channel.parent_id:
@@ -38,7 +36,7 @@ static func from_json(data: Dictionary) -> Guild:
 	for channel: Channel.GuildChannel in _channels:
 		sorted_channels.append(channel)
 		if channel.channel_type == Channel.Type.CATEGORY:
-			var children: Variant = categories.get(channel.channel_id)
+			var children: Array = categories.get(channel.channel_id, [])
 			
 			if children:
 				children.sort_custom(_sort_children)
