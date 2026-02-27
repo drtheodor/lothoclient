@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://3jnr43aapvcc"]
+[gd_scene format=3 uid="uid://b7tewvhgpgdgl"]
 
 [ext_resource type="Script" uid="uid://den5el3uyaxdw" path="res://message_replying_to.gd" id="1_0n11p"]
-[ext_resource type="Script" uid="uid://c3ludtohgp2vi" path="res://tokenized_label.gd" id="2_sedq8"]
+[ext_resource type="Script" path="res://tokenized_label.gd" id="2_sedq8"]
 [ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="2_yvqae"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6vh5s"]
@@ -10,11 +10,6 @@ corner_radius_top_left = 100
 corner_radius_top_right = 100
 corner_radius_bottom_right = 100
 corner_radius_bottom_left = 100
-
-[sub_resource type="LabelSettings" id="LabelSettings_sedq8"]
-line_spacing = 0.0
-outline_size = 1
-shadow_size = 0
 
 [node name="MessageReplyingTo" type="HBoxContainer" unique_id=1197439938]
 anchors_preset = 10
@@ -25,8 +20,10 @@ theme_override_constants/separation = 8
 script = ExtResource("1_0n11p")
 
 [node name="Label" type="Label" parent="." unique_id=1489693846]
+custom_minimum_size = Vector2(54, 0)
 layout_mode = 2
-text = " ╭──"
+theme_override_colors/font_color = Color(0.7430622, 0.7430624, 0.74306214, 1)
+text = "╭───"
 horizontal_alignment = 2
 
 [node name="Rounder" type="PanelContainer" parent="." unique_id=724529620]
@@ -43,10 +40,16 @@ expand_mode = 1
 
 [node name="Author" type="Label" parent="." unique_id=1968599985]
 layout_mode = 2
-label_settings = SubResource("LabelSettings_sedq8")
+theme_override_font_sizes/font_size = 12
 
 [node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=1545865068]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/bold_font_size = 12
+theme_override_font_sizes/bold_italics_font_size = 12
+theme_override_font_sizes/italics_font_size = 12
+theme_override_font_sizes/mono_font_size = 12
 autowrap_mode = 0
+vertical_alignment = 1
 script = ExtResource("2_sedq8")
