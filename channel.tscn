@@ -206,11 +206,24 @@ layout_mode = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Main" unique_id=1145187782]
 layout_mode = 2
 
-[node name="TypingStart" type="Label" parent="MarginContainer/HBoxContainer/Main/VBoxContainer" unique_id=1814076997]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Main/VBoxContainer" unique_id=1749170917]
+layout_mode = 2
+
+[node name="StatusBar" type="Label" parent="MarginContainer/HBoxContainer/Main/VBoxContainer/HBoxContainer" unique_id=1814076997]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
 text = "Someone is typing..."
+
+[node name="StopReply" type="Button" parent="MarginContainer/HBoxContainer/Main/VBoxContainer/HBoxContainer" unique_id=263479393]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = ""
+flat = true
 
 [node name="NewMessageInput" type="CodeEdit" parent="MarginContainer/HBoxContainer/Main/VBoxContainer" unique_id=1149097292]
 unique_name_in_owner = true
