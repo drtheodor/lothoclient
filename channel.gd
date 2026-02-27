@@ -146,6 +146,7 @@ func _on_message_hover(message: UiMessage) -> void:
 	var message_position: Vector2 = message.get_screen_position()
 	message_position.x += message.size[0]
 	message_position.x -= context.size[0]
+	context.visible = true
 	context.position = message_position
 
 func _is_near_bottom() -> bool:

@@ -1,29 +1,65 @@
 [gd_scene format=3 uid="uid://bfuyrfqt5fqh2"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3ebo7"]
+bg_color = Color(0.42, 0.42, 0.42, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mvsta"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hjewq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nfq5s"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_srjdr"]
+
 [node name="Window" type="Window" unique_id=533771705]
+transparent_bg = true
 oversampling_override = 1.0
 position = Vector2i(0, 36)
-size = Vector2i(468, 100)
+size = Vector2i(120, 25)
 
-[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1993438364]
+[node name="Panel" type="Panel" parent="." unique_id=1249454986]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_3ebo7")
 
-[node name="Button" type="Button" parent="HBoxContainer" unique_id=411171188]
-layout_mode = 2
-text = "im a button"
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel" unique_id=1993438364]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_right = 122.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 13
 
-[node name="Button2" type="Button" parent="HBoxContainer" unique_id=37607188]
+[node name="Button" type="Button" parent="Panel/HBoxContainer" unique_id=411171188]
 layout_mode = 2
-text = "im a button"
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxEmpty_mvsta")
+text = ""
 
-[node name="Button3" type="Button" parent="HBoxContainer" unique_id=638036456]
+[node name="Button2" type="Button" parent="Panel/HBoxContainer" unique_id=37607188]
 layout_mode = 2
-text = "im a button"
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxEmpty_hjewq")
+text = ""
 
-[node name="Button4" type="Button" parent="HBoxContainer" unique_id=1200773561]
+[node name="Button3" type="Button" parent="Panel/HBoxContainer" unique_id=638036456]
 layout_mode = 2
-text = "im a button"
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxEmpty_nfq5s")
+text = ""
+
+[node name="Button4" type="Button" parent="Panel/HBoxContainer" unique_id=1200773561]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxEmpty_srjdr")
+text = ""

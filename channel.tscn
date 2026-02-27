@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bjrnqpswwo47d"]
 
 [ext_resource type="Script" uid="uid://c2cfg4anvcnhw" path="res://channel.gd" id="1_vksbt"]
-[ext_resource type="PackedScene" path="res://window.tscn" id="3_cpih4"]
+[ext_resource type="PackedScene" uid="uid://bfuyrfqt5fqh2" path="res://window.tscn" id="3_cpih4"]
 [ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="3_uw2bi"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vksbt"]
@@ -252,7 +252,26 @@ expand_mode = 1
 layout_mode = 2
 text = "Godot"
 
+[node name="Members" type="PanelContainer" parent="MarginContainer/HBoxContainer" unique_id=1556673316]
+visible = false
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/Members" unique_id=830101782]
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="GuildList" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Members/ScrollContainer" unique_id=1896472401]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GuildItem" parent="MarginContainer/HBoxContainer/Members/ScrollContainer/GuildList" unique_id=1785283860 instance_placeholder="res://guild_item.tscn"]
+layout_mode = 2
+
 [node name="Context" parent="." unique_id=533771705 instance=ExtResource("3_cpih4")]
+visible = false
 unresizable = true
 borderless = true
 unfocusable = true
