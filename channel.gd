@@ -126,11 +126,14 @@ func _on_message(message: Message, scroll: bool = true) -> void:
 		pending.queue_free()
 	
 	if not self.last_message or not self._should_group(last_message.messages[-1], message):
-		self.last_message = MessageScene.instantiate()
-		self.last_message.mouse_entered.connect(
+		var new_message: UiMessage = MessageScene.instantiate()
+		
+		new_message.mouse_entered.connect(
 			func() -> void:
-				self._on_message_hover(self.last_message)
+				self._on_message_hover(new_message)
 		)
+		
+		self.last_message = new_message
 		message_list.add_child(self.last_message)
 	
 	# FIXME: temp await fix since there's no Promise.all :(
@@ -141,6 +144,8 @@ func _on_message(message: Message, scroll: bool = true) -> void:
 
 func _on_message_hover(message: UiMessage) -> void:
 	var message_position: Vector2 = message.get_screen_position()
+	message_position.x += message.size[0]
+	message_position.x -= context.size[0]
 	context.position = message_position
 
 func _is_near_bottom() -> bool:
