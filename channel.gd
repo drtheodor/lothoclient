@@ -141,10 +141,14 @@ func _on_message(message: Message, scroll: bool = true) -> void:
 
 func _on_message_hover(label: Control, _message: Message) -> void:
 	var message_position: Vector2 = label.get_screen_position()
-	message_position.x += label.size[0]
-	message_position.x -= context.size[0] + 10
+	
+	message_position -= Vector2(10, 4)
+	message_position.x += label.size[0] - context.size[0]
+	
 	context.visible = true
 	context.position = message_position
+	
+	label.grab_focus()
 
 func _is_near_bottom() -> bool:
 	var vbar: ScrollBar = scroll_container.get_v_scroll_bar()

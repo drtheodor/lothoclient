@@ -1,10 +1,14 @@
 [gd_scene format=3 uid="uid://dqtnfkxwnxpbf"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wwyii"]
+bg_color = Color(0.6, 0.6, 0.6, 0.19607843)
+
 [node name="Content" type="RichTextLabel" unique_id=1220745781]
 offset_right = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 focus_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxFlat_wwyii")
 fit_content = true
 scroll_active = false
 selection_enabled = true
