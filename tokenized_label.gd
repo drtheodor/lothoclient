@@ -28,7 +28,9 @@ func from_tokens(tokens: Array[Message.Token], max_image_width: int, emoji_size:
 				self.pop()
 			
 			Message.Token.Type.IMAGE:
-				if not max_image_width: continue
+				if not max_image_width:
+					self.append_text("")
+					continue
 				
 				var image_token: Message.ImageToken = token
 				var tex: ImageTexture = image_token.texture

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b7tewvhgpgdgl"]
 
 [ext_resource type="Script" uid="uid://den5el3uyaxdw" path="res://message_replying_to.gd" id="1_0n11p"]
-[ext_resource type="Script" path="res://tokenized_label.gd" id="2_sedq8"]
+[ext_resource type="Script" uid="uid://c3ludtohgp2vi" path="res://tokenized_label.gd" id="2_sedq8"]
 [ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="2_yvqae"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6vh5s"]
@@ -41,6 +41,7 @@ expand_mode = 1
 [node name="Author" type="Label" parent="." unique_id=1968599985]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
+text = "Author"
 
 [node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=1545865068]
 layout_mode = 2
