@@ -9,22 +9,27 @@ var message_id: String
 var timestamp: int
 var tokens: Array[Token]
 
-func _init(_author_name: String, _author_id: String, _author_avatar: String, _message_id: String, _timestamp: int, _nonce: String, _tokens: Array[Token]) -> void:
-	self.author_name = _author_name
-	self.author_id = _author_id
-	self.author_avatar = _author_avatar
-	self.nonce = _nonce
-	
-	self.message_id = _message_id
-	self.timestamp = _timestamp
-	self.tokens = _tokens
+var referenced: Message
 
-static func with_user(user: User, _message_id: String, _timestamp: int, _nonce: String, _tokens: Array[Token]) -> Message:
-	return Message.new(user.global_name, user.user_id, user.avatar_id, _message_id, _timestamp, _nonce, _tokens)
+static func system_message(text: String) -> Message:
+	var message: Message = Message.new()
+	message.author_name = "GDiscord"
+	message.author_id = "643945264868098049"
+	message.author_avatar = "c6a249645d46209f337279cd2ca998c7"
+	message.timestamp = Util.get_time_millis()
+	message.tokens = [Message.TextToken.new(text)]
+	
+	return message
+
+static func with_user(user: User) -> Message:
+	var message: Message = Message.new()
+	message.author_name = user.global_name
+	message.author_id = user.user_id
+	message.author_avatar = user.avatar_id
+	return message
 
 static func from_json(data: Dictionary) -> Message:
 	var _message_id: String = data["id"]
-	var content: String = data["content"]
 	var author: Dictionary = data["author"]
 	#var mentions = message_data["mentions"]
 	#var mention_roles = message_data["mention_roles"]
@@ -32,16 +37,21 @@ static func from_json(data: Dictionary) -> Message:
 	#var embeds: Array = data.get("embeds", [])
 	var iso_timestamp: String = data["timestamp"]
 	#var edited_timestamp: int = message_data["edited_timestamp"]
+	
+	var _author_id: String = author["id"]
 	var _author_name: String = author["global_name"] if author["global_name"] else author["username"] # I don't know why this fixes it but it doesl
 	var _author_avatar: Variant = author.get("avatar")
 	_author_avatar = _author_avatar if _author_avatar else ""
 	
-	var _author_id: String = author["id"]
+	var _referenced: Variant = data.get("referenced_message", {})
+	
+	if _referenced:
+		_referenced = Message.from_json(_referenced)
 
 	var _timestamp: int = Time.get_unix_time_from_datetime_string(iso_timestamp)
-	
 	var _nonce: String = data.get("nonce", "")
 	
+	var content: String = data["content"]
 	var _tokens: Array[Token] = Token.parse(content)
 	
 	for attachment: Dictionary in attachments:
@@ -64,7 +74,20 @@ static func from_json(data: Dictionary) -> Message:
 			else:
 				_tokens.append(TextToken.new("[file %s] " % url_attachment))
 	
-	return Message.new(_author_name, _author_id, _author_avatar, _message_id, _timestamp, _nonce, _tokens)
+	var message: Message = Message.new()
+	message.author_name = _author_name
+	message.author_id = _author_id
+	message.author_avatar = _author_avatar
+	
+	message.message_id = _message_id
+	message.timestamp = _timestamp
+	message.nonce = _nonce
+	message.tokens = _tokens
+	
+	if _referenced:
+		message.referenced = _referenced
+	
+	return message
 
 class Token:
 	

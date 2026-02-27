@@ -19,6 +19,8 @@ const ChannelCategoryItemScene: PackedScene = preload("res://channel_category_it
 const GuildItemScene: PackedScene = preload("res://guild_item.tscn")
 
 var _busy: bool
+
+var _hover_message: Message
 var _replying_to: Message:
 	set(value):
 		_replying_to = value
@@ -33,7 +35,6 @@ var _replying_to: Message:
 			self.status_bar.visible = false
 			self.cancel_reply_btn.visible = false
 			self.status_bar.text = ""
-var _hover_message: Message
 
 func _ready() -> void:
 	if OS.get_environment("THEME") == "transparent":
@@ -105,11 +106,12 @@ func _add_pending_message(text: String, nonce: int) -> void:
 	var pending: UiMessage = MessageScene.instantiate()
 	message_list.add_child(pending)
 	
-	var message: Message = Message.with_user(
-		Discord.user,  _replying_to.message_id if _replying_to else "", 
-		int(Time.get_unix_time_from_system()),
-		str(nonce), [Message.TextToken.new(text)]
-	)
+	var message: Message = Message.with_user(Discord.user)
+	
+	message.referenced = _replying_to
+	message.timestamp = int(Time.get_unix_time_from_system())
+	message.nonce = str(nonce)
+	message.tokens = [Message.TextToken.new(text)]
 	
 	pending.set_pending(true)
 	pending.add_message(message)
@@ -195,10 +197,7 @@ func scroll_to_bottom() -> void:
 			scroll_container.scroll_vertical = content.size.y - scroll_container.size.y
 
 func add_error_message(text: String) -> void:
-	self._on_message(Message.new("GDiscord", "643945264868098049", 
-		"c6a249645d46209f337279cd2ca998c7", "", Util.get_time_millis(), "", [
-		Message.TextToken.new(text)
-	]))
+	self._on_message(Message.system_message(text))
 
 func _on_code_edit_gui_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:

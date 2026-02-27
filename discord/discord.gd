@@ -32,8 +32,7 @@ var _last_heartbeat: int = -1
 
 var guild_cache: Dictionary[String, Guild] = {}
 var channel_cache: Dictionary[String, Channel] = {}
-#                                    Array[Message]
-var message_cache: Dictionary[String, Array] = {}
+#var message_cache: Dictionary[String, Message] = {}
 
 var image_cache: ImageCache = ImageCache.new(http)
 
@@ -61,6 +60,11 @@ func _ready() -> void:
 	poll_timer.timeout.connect(self._gateway.poll)
 	
 	self.add_child(poll_timer)
+	
+	#self.on_message.connect(self._on_message)
+
+#func _on_message(message: Message) -> void:
+#	self.message_cache[message.message_id] = message
 
 func _on_gateway_connected(socket: WebSocketPeer) -> void:
 	print("> Sending handshake packet.")
@@ -226,9 +230,7 @@ func fetch_messages(channel_id: String) -> Array[Message]:
 	var data: Variant = await Discord.http.request_json_or_null(url, ["Authorization: " + Discord.token])
 	
 	if not data or data is not Array:
-		return [Message.new("GDiscord", "0", "https://theo.is-a.dev/favicon.png", "", Util.get_time_millis(), "", [
-			Message.TextToken.new("Failed to load messages")
-		])]
+		return [Message.system_message("Failed to load messages")]
 	
 	var messages: Array = data
 	var result: Array[Message] = []

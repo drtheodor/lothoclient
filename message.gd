@@ -38,6 +38,12 @@ func add_message(message: Message) -> void:
 	self.content_base.add_child(self.label)
 	
 	# FIXME: temp await fix since there's no Promise.all :(
+	if message.referenced:
+		var extra_tokens: Array[Message.Token] = [Message.TextToken.new(" Replying to @%s: " % message.referenced.author_name)]
+		extra_tokens.append_array(message.referenced.tokens)
+		extra_tokens.append(Message.TextToken.new("\n"))
+		self._add_content(extra_tokens)
+	
 	await self._add_content(message.tokens)
 
 func _set_author(author_name: String, author_id: String, avatar_id: String) -> void:
