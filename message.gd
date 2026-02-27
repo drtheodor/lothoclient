@@ -11,10 +11,12 @@ const MessageContent: PackedScene = preload("res://message_content.tscn")
 @export var max_image_width: int = 580
 @export var emoji_size: int = 24
 
-var label: RichTextLabel
+var label: Control
 
 var messages: Array[Message] = []
 var _pending: bool
+
+signal mouse_entered_msg(msg_label: Control, message: Message)
 
 func add_message(message: Message) -> void:
 	if not self.label:
@@ -23,10 +25,17 @@ func add_message(message: Message) -> void:
 	
 	self.messages.append(message)
 	
-	self.label = MessageContent.instantiate()
-	self.label.meta_clicked.connect(func (meta: Variant) -> void: OS.shell_open(str(meta)))
+	var new_label: Control = MessageContent.instantiate()
 	
-	self.content_base.add_child(label)
+	new_label.mouse_entered.connect(
+		func () -> void:
+			self.mouse_entered_msg.emit(new_label, message)
+	)
+	
+	new_label.meta_clicked.connect(func (meta: Variant) -> void: OS.shell_open(str(meta)))
+	
+	self.label = new_label
+	self.content_base.add_child(self.label)
 	
 	# FIXME: temp await fix since there's no Promise.all :(
 	await self._add_content(message.tokens)

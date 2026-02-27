@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bjrnqpswwo47d"]
 
 [ext_resource type="Script" uid="uid://c2cfg4anvcnhw" path="res://channel.gd" id="1_vksbt"]
-[ext_resource type="PackedScene" uid="uid://bfuyrfqt5fqh2" path="res://window.tscn" id="3_cpih4"]
+[ext_resource type="PackedScene" uid="uid://bfuyrfqt5fqh2" path="res://message_context.tscn" id="3_cpih4"]
 [ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="3_uw2bi"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vksbt"]
@@ -270,12 +270,8 @@ size_flags_horizontal = 3
 [node name="GuildItem" parent="MarginContainer/HBoxContainer/Members/ScrollContainer/GuildList" unique_id=1785283860 instance_placeholder="res://guild_item.tscn"]
 layout_mode = 2
 
-[node name="Context" parent="." unique_id=533771705 instance=ExtResource("3_cpih4")]
+[node name="MessageContext" parent="." unique_id=533771705 instance=ExtResource("3_cpih4")]
+unique_name_in_owner = true
 visible = false
-unresizable = true
-borderless = true
-unfocusable = true
-popup_window = true
-popup_wm_hint = true
 
 [connection signal="gui_input" from="MarginContainer/HBoxContainer/Main/VBoxContainer/NewMessageInput" to="." method="_on_code_edit_gui_input"]
