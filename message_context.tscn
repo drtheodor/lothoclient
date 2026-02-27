@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://bfuyrfqt5fqh2"]
 
+[ext_resource type="Script" uid="uid://ddw50waqg7oh1" path="res://message_context.gd" id="1_gcden"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3ebo7"]
 bg_color = Color(0.02745098, 0.02745098, 0.03529412, 1)
 border_width_left = 1
@@ -29,6 +31,7 @@ borderless = true
 unfocusable = true
 popup_window = true
 popup_wm_hint = true
+script = ExtResource("1_gcden")
 
 [node name="Panel" type="Panel" parent="." unique_id=1249454986]
 anchors_preset = 15
@@ -63,14 +66,18 @@ theme_override_font_sizes/font_size = 32
 theme_override_styles/normal = SubResource("StyleBoxEmpty_hjewq")
 text = ""
 
-[node name="Button3" type="Button" parent="Panel/HBoxContainer" unique_id=638036456]
+[node name="ReplyButton" type="Button" parent="Panel/HBoxContainer" unique_id=638036456]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 theme_override_styles/normal = SubResource("StyleBoxEmpty_nfq5s")
 text = ""
 
-[node name="Button4" type="Button" parent="Panel/HBoxContainer" unique_id=1200773561]
+[node name="ForwardButton" type="Button" parent="Panel/HBoxContainer" unique_id=1200773561]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 theme_override_styles/normal = SubResource("StyleBoxEmpty_srjdr")
 text = ""
+
+[connection signal="pressed" from="Panel/HBoxContainer/ReplyButton" to="." method="_on_reply_button_pressed"]

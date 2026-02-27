@@ -217,7 +217,7 @@ size_flags_horizontal = 3
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
 text = "Someone is typing..."
 
-[node name="StopReply" type="Button" parent="MarginContainer/HBoxContainer/Main/VBoxContainer/HBoxContainer" unique_id=263479393]
+[node name="CancelReply" type="Button" parent="MarginContainer/HBoxContainer/Main/VBoxContainer/HBoxContainer" unique_id=263479393]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
@@ -230,6 +230,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 placeholder_text = "Message in #channel"
+editable = false
 backspace_deletes_composite_character_enabled = true
 wrap_mode = 1
 scroll_smooth = true
@@ -287,4 +288,5 @@ layout_mode = 2
 unique_name_in_owner = true
 visible = false
 
+[connection signal="pressed" from="MarginContainer/HBoxContainer/Main/VBoxContainer/HBoxContainer/CancelReply" to="." method="_on_cancel_reply_pressed"]
 [connection signal="gui_input" from="MarginContainer/HBoxContainer/Main/VBoxContainer/NewMessageInput" to="." method="_on_code_edit_gui_input"]

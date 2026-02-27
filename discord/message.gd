@@ -5,22 +5,25 @@ var author_id: String
 var author_avatar: String
 var nonce: String
 
+var message_id: String
 var timestamp: int
 var tokens: Array[Token]
 
-func _init(_author_name: String, _author_id: String, _author_avatar: String, _timestamp: int, _nonce: String, _tokens: Array[Token]) -> void:
+func _init(_author_name: String, _author_id: String, _author_avatar: String, _message_id: String, _timestamp: int, _nonce: String, _tokens: Array[Token]) -> void:
 	self.author_name = _author_name
 	self.author_id = _author_id
 	self.author_avatar = _author_avatar
 	self.nonce = _nonce
 	
+	self.message_id = _message_id
 	self.timestamp = _timestamp
 	self.tokens = _tokens
 
-static func with_user(user: User,  _timestamp: int, _nonce: String, _tokens: Array[Token]) -> Message:
-	return Message.new(user.global_name, user.user_id, user.avatar_id, _timestamp, _nonce, _tokens)
+static func with_user(user: User, _message_id: String, _timestamp: int, _nonce: String, _tokens: Array[Token]) -> Message:
+	return Message.new(user.global_name, user.user_id, user.avatar_id, _message_id, _timestamp, _nonce, _tokens)
 
 static func from_json(data: Dictionary) -> Message:
+	var _message_id: String = data["id"]
 	var content: String = data["content"]
 	var author: Dictionary = data["author"]
 	#var mentions = message_data["mentions"]
@@ -61,7 +64,7 @@ static func from_json(data: Dictionary) -> Message:
 			else:
 				_tokens.append(TextToken.new("[file %s] " % url_attachment))
 	
-	return Message.new(_author_name, _author_id, _author_avatar, _timestamp, _nonce, _tokens)
+	return Message.new(_author_name, _author_id, _author_avatar, _message_id, _timestamp, _nonce, _tokens)
 
 class Token:
 	

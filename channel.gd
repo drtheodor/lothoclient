@@ -4,6 +4,8 @@ extends Control
 @onready var channel_list: VBoxContainer = %ChannelList
 @onready var message_input: CodeEdit = %NewMessageInput
 @onready var guild_list: Container = %GuildList
+@onready var status_bar: Label = %StatusBar
+@onready var cancel_reply_btn: Button = %CancelReply
 
 @onready var scroll_container: ScrollContainer = $MarginContainer/HBoxContainer/Main/ScrollContainer
 @onready var channel_label: Label = $MarginContainer/HBoxContainer/Main/TopPanel/ChannelLabel
@@ -17,6 +19,8 @@ const ChannelCategoryItemScene: PackedScene = preload("res://channel_category_it
 const GuildItemScene: PackedScene = preload("res://guild_item.tscn")
 
 var _busy: bool
+var _replying_to: Message
+var _hover_message: Message
 
 func _ready() -> void:
 	if OS.get_environment("THEME") == "transparent":
@@ -29,8 +33,22 @@ func _ready() -> void:
 	
 	Discord.on_ready.connect(self._on_discord_ready)
 	Discord.on_message.connect(self._on_message)
+	
+	self.context.on_reply.connect(func() -> void: self.set_replying_to(self._hover_message))
 
-	self.message_input.editable = false
+func set_replying_to(message: Message) -> void:
+	self._replying_to = message
+	
+	if message:
+		self.status_bar.text = "Replying to @" + message.author_name
+		self.status_bar.visible = true
+		self.cancel_reply_btn.visible = true
+		
+		self.message_input.grab_focus()
+	else:
+		self.status_bar.visible = false
+		self.cancel_reply_btn.visible = false
+		self.status_bar.text = ""
 
 func _init_guild_channels(channels: Array[Channel.GuildChannel]) -> void:
 	for child: Node in channel_list.get_children():
@@ -89,7 +107,8 @@ func _add_pending_message(text: String, nonce: int) -> void:
 	message_list.add_child(pending)
 	
 	var message: Message = Message.with_user(
-		Discord.user, int(Time.get_unix_time_from_system()), 
+		Discord.user,  _replying_to.message_id if _replying_to else "", 
+		int(Time.get_unix_time_from_system()),
 		str(nonce), [Message.TextToken.new(text)]
 	)
 	
@@ -139,7 +158,8 @@ func _on_message(message: Message, scroll: bool = true) -> void:
 	if scroll and _is_near_bottom():
 		self.scroll_to_bottom()
 
-func _on_message_hover(label: Control, _message: Message) -> void:
+func _on_message_hover(label: Control, message: Message) -> void:
+	self._hover_message = message
 	var message_position: Vector2 = label.get_screen_position()
 	
 	message_position -= Vector2(10, 4)
@@ -176,7 +196,8 @@ func scroll_to_bottom() -> void:
 			scroll_container.scroll_vertical = content.size.y - scroll_container.size.y
 
 func add_error_message(text: String) -> void:
-	self._on_message(Message.new("GDiscord", "643945264868098049", "c6a249645d46209f337279cd2ca998c7", Util.get_time_millis(), "", [
+	self._on_message(Message.new("GDiscord", "643945264868098049", 
+		"c6a249645d46209f337279cd2ca998c7", "", Util.get_time_millis(), "", [
 		Message.TextToken.new(text)
 	]))
 
@@ -196,5 +217,10 @@ func _on_code_edit_gui_input(event: InputEvent) -> void:
 			var text_to_send: String = message_input.text
 			message_input.text = ''
 			
-			var nonce: int = Discord.send_message(Discord.channel, text_to_send)
+			var nonce: int = Discord.send_message(Discord.channel, text_to_send, _replying_to.message_id if _replying_to else "",)
 			_add_pending_message(text_to_send, nonce)
+			
+			self.set_replying_to(null)
+
+func _on_cancel_reply_pressed() -> void:
+	self.set_replying_to(null)

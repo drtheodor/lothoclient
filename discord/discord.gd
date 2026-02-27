@@ -226,7 +226,7 @@ func fetch_messages(channel_id: String) -> Array[Message]:
 	var data: Variant = await Discord.http.request_json_or_null(url, ["Authorization: " + Discord.token])
 	
 	if not data or data is not Array:
-		return [Message.new("GDiscord", "0", "https://theo.is-a.dev/favicon.png", Util.get_time_millis(), "", [
+		return [Message.new("GDiscord", "0", "https://theo.is-a.dev/favicon.png", "", Util.get_time_millis(), "", [
 			Message.TextToken.new("Failed to load messages")
 		])]
 	
@@ -253,7 +253,7 @@ func get_channel(channel_id: String) -> Channel:
 	
 	return null
 
-func send_message(channel_id: String, message: String) -> int:
+func send_message(channel_id: String, message: String, replying_to: String = "") -> int:
 	var s: int = self._generate_snowflake()
 	
 	var body: Dictionary[String, Variant] = {
@@ -266,6 +266,16 @@ func send_message(channel_id: String, message: String) -> int:
 		"tts": false,
 		"flags": 0
 	}
+	
+	if replying_to:
+		body["allowed_mentions"] = {
+			"parse": ["users", "roles", "everyone"],
+			"replied_user": false
+		}
+		
+		body["message_reference"] = {
+			"message_id": replying_to
+		}
 	
 	var url: String = "%s/channels/%s/messages" % [BASE_URL, channel_id]
 	
