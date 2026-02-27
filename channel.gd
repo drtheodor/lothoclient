@@ -9,6 +9,7 @@ extends Control
 @onready var channel_label: Label = $MarginContainer/HBoxContainer/Main/TopPanel/ChannelLabel
 @onready var user_pref: Label = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Name
 @onready var user_pref_avatar: TextureRect = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Rounder/Avatar
+@onready var context: Window = $Context
 
 const MessageScene: PackedScene = preload("res://message.tscn")
 const ChannelItemScene: PackedScene = preload("res://channel_item.tscn")
@@ -126,6 +127,10 @@ func _on_message(message: Message, scroll: bool = true) -> void:
 	
 	if not self.last_message or not self._should_group(last_message.messages[-1], message):
 		self.last_message = MessageScene.instantiate()
+		self.last_message.mouse_entered.connect(
+			func() -> void:
+				self._on_message_hover(self.last_message)
+		)
 		message_list.add_child(self.last_message)
 	
 	# FIXME: temp await fix since there's no Promise.all :(
@@ -133,6 +138,10 @@ func _on_message(message: Message, scroll: bool = true) -> void:
 	
 	if scroll and _is_near_bottom():
 		self.scroll_to_bottom()
+
+func _on_message_hover(message: UiMessage) -> void:
+	var message_position: Vector2 = message.get_screen_position()
+	context.position = message_position
 
 func _is_near_bottom() -> bool:
 	var vbar: ScrollBar = scroll_container.get_v_scroll_bar()

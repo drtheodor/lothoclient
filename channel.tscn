@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bjrnqpswwo47d"]
 
 [ext_resource type="Script" uid="uid://c2cfg4anvcnhw" path="res://channel.gd" id="1_vksbt"]
+[ext_resource type="PackedScene" uid="uid://bfuyrfqt5fqh2" path="res://window.tscn" id="3_cpih4"]
 [ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="3_uw2bi"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vksbt"]
@@ -250,5 +251,7 @@ expand_mode = 1
 [node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Panel2/VBoxContainer2/HBoxContainer14" unique_id=518923629]
 layout_mode = 2
 text = "Godot"
+
+[node name="Context" parent="." unique_id=533771705 instance=ExtResource("3_cpih4")]
 
 [connection signal="gui_input" from="MarginContainer/HBoxContainer/Main/VBoxContainer/NewMessageInput" to="." method="_on_code_edit_gui_input"]
