@@ -2,15 +2,12 @@
 
 [ext_resource type="Script" uid="uid://c3ludtohgp2vi" path="res://tokenized_label.gd" id="1_okd77"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wwyii"]
-bg_color = Color(0.6, 0.6, 0.6, 0.19607843)
-
 [node name="Content" type="RichTextLabel" unique_id=1220745781]
 offset_right = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 focus_mode = 2
-theme_override_styles/focus = SubResource("StyleBoxFlat_wwyii")
+theme_type_variation = &"FocusableRichLabel"
 fit_content = true
 scroll_active = false
 selection_enabled = true

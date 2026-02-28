@@ -7,11 +7,11 @@ extends Control
 @onready var status_bar: Label = %StatusBar
 @onready var cancel_reply_btn: Button = %CancelReply
 
-@onready var scroll_container: ScrollContainer = $MarginContainer/HBoxContainer/Main/ScrollContainer
-@onready var channel_label: Label = $MarginContainer/HBoxContainer/Main/TopPanel/ChannelLabel
-@onready var user_pref: Label = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Name
-@onready var user_pref_avatar: TextureRect = $MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Rounder/Avatar
-@onready var context: Window = %MessageContext
+@onready var scroll_container: ScrollContainer = $HBoxContainer/Main/ScrollContainer
+@onready var channel_label: Label = $HBoxContainer/Main/TopPanel/ChannelLabel
+@onready var user_pref: Label = $HBoxContainer/Sidebar/UserPref/Sort/Name
+@onready var user_pref_avatar: TextureRect = $HBoxContainer/Sidebar/UserPref/Sort/Rounder/Avatar
+@onready var context: Window = $MessageContext
 
 const MessageScene: PackedScene = preload("res://message.tscn")
 const ChannelItemScene: PackedScene = preload("res://channel_item.tscn")

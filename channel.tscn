@@ -4,25 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://bfuyrfqt5fqh2" path="res://message_context.tscn" id="3_cpih4"]
 [ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="3_uw2bi"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vksbt"]
-bg_color = Color(0.02745098, 0.02745098, 0.03529412, 1)
-corner_detail = 1
-
-[sub_resource type="Theme" id="Theme_vksbt"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cpih4"]
-bg_color = Color(0.36120003, 0.38184002, 0.43, 1)
-border_color = Color(0.8, 0.8, 0.8, 0)
-border_blend = true
-corner_radius_top_left = 100
-corner_radius_top_right = 100
-corner_radius_bottom_right = 100
-corner_radius_bottom_left = 100
-corner_detail = 20
-shadow_color = Color(0, 0, 0, 1)
-shadow_size = 2
-shadow_offset = Vector2(60.26, 0)
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uw2bi"]
 bg_color = Color(0.8781866, 0.2812874, 0.17693636, 1)
 corner_radius_top_left = 100
@@ -32,66 +13,51 @@ corner_radius_bottom_left = 100
 
 [sub_resource type="Theme" id="Theme_cpih4"]
 
-[node name="Panel" type="Panel" unique_id=538390015]
+[node name="MarginContainer" type="MarginContainer" unique_id=690086959]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_vksbt")
 script = ExtResource("1_vksbt")
 
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=690086959]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1687483493]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1687483493]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_type_variation = &"MainContent"
 
-[node name="Panel" type="PanelContainer" parent="MarginContainer/HBoxContainer" unique_id=116323826]
+[node name="Panel" type="PanelContainer" parent="HBoxContainer" unique_id=116323826]
 custom_minimum_size = Vector2(46, 0)
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/Panel" unique_id=141855357]
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/Panel" unique_id=141855357]
 layout_mode = 2
 follow_focus = true
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 3
 
-[node name="GuildList" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Panel/ScrollContainer" unique_id=185210723]
+[node name="GuildList" type="VBoxContainer" parent="HBoxContainer/Panel/ScrollContainer" unique_id=185210723]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="GuildItem" parent="MarginContainer/HBoxContainer/Panel/ScrollContainer/GuildList" unique_id=156196709 instance_placeholder="res://guild_item.tscn"]
+[node name="GuildItem" parent="HBoxContainer/Panel/ScrollContainer/GuildList" unique_id=156196709 instance_placeholder="res://guild_item.tscn"]
 layout_mode = 2
 
-[node name="Sidebar" type="VBoxContainer" parent="MarginContainer/HBoxContainer" unique_id=768500425]
+[node name="Sidebar" type="VBoxContainer" parent="HBoxContainer" unique_id=768500425]
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_constants/separation = 8
 metadata/_edit_use_anchors_ = true
 
-[node name="Search" type="PanelContainer" parent="MarginContainer/HBoxContainer/Sidebar" unique_id=2054655699]
+[node name="Search" type="PanelContainer" parent="HBoxContainer/Sidebar" unique_id=2054655699]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/Search" unique_id=1809852755]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Sidebar/Search" unique_id=1809852755]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/Search/VBoxContainer" unique_id=683082796]
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/Sidebar/Search/VBoxContainer" unique_id=683082796]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/Search/VBoxContainer/HBoxContainer" unique_id=2137011290]
+[node name="Label" type="Label" parent="HBoxContainer/Sidebar/Search/VBoxContainer/HBoxContainer" unique_id=2137011290]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -99,37 +65,37 @@ size_flags_vertical = 1
 text = "  Search...."
 vertical_alignment = 1
 
-[node name="UserList" type="PanelContainer" parent="MarginContainer/HBoxContainer/Sidebar" unique_id=994700996]
+[node name="UserList" type="PanelContainer" parent="HBoxContainer/Sidebar" unique_id=994700996]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList" unique_id=2039652800]
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/Sidebar/UserList" unique_id=2039652800]
 layout_mode = 2
 size_flags_vertical = 3
 follow_focus = true
 horizontal_scroll_mode = 0
 
-[node name="ChannelList" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer" unique_id=1909385764]
+[node name="ChannelList" type="VBoxContainer" parent="HBoxContainer/Sidebar/UserList/ScrollContainer" unique_id=1909385764]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ChannelItem2" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=972465957 instance_placeholder="res://channel_item.tscn"]
+[node name="ChannelItem2" parent="HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=972465957 instance_placeholder="res://channel_item.tscn"]
 layout_mode = 2
 
-[node name="ChannelItem" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=268068189 instance_placeholder="res://channel_item.tscn"]
+[node name="ChannelItem" parent="HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=268068189 instance_placeholder="res://channel_item.tscn"]
 layout_mode = 2
 
-[node name="ChannelCategoryItem" parent="MarginContainer/HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=1704411717 instance_placeholder="res://channel_category_item.tscn"]
+[node name="ChannelCategoryItem" parent="HBoxContainer/Sidebar/UserList/ScrollContainer/ChannelList" unique_id=1704411717 instance_placeholder="res://channel_category_item.tscn"]
 layout_mode = 2
 
-[node name="UserPref" type="Panel" parent="MarginContainer/HBoxContainer/Sidebar" unique_id=701961912]
+[node name="UserPref" type="Panel" parent="HBoxContainer/Sidebar" unique_id=701961912]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 
-[node name="Sort" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserPref" unique_id=767194172]
+[node name="Sort" type="HBoxContainer" parent="HBoxContainer/Sidebar/UserPref" unique_id=767194172]
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
@@ -141,17 +107,16 @@ offset_bottom = 20.0
 grow_vertical = 2
 pivot_offset = Vector2(60, -72)
 
-[node name="Rounder" type="PanelContainer" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort" unique_id=1756092194]
-clip_children = 2
+[node name="Rounder" type="PanelContainer" parent="HBoxContainer/Sidebar/UserPref/Sort" unique_id=1756092194]
+clip_children = 1
 z_index = 1
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme = SubResource("Theme_vksbt")
-theme_override_styles/panel = SubResource("StyleBoxFlat_cpih4")
+theme_type_variation = &"RounderPanel"
 
-[node name="StatusDot" type="Panel" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Rounder" unique_id=622019559]
+[node name="StatusDot" type="Panel" parent="HBoxContainer/Sidebar/UserPref/Sort/Rounder" unique_id=622019559]
 z_index = 1
 custom_minimum_size = Vector2(8, 8)
 layout_mode = 2
@@ -159,7 +124,7 @@ size_flags_horizontal = 8
 size_flags_vertical = 8
 theme_override_styles/panel = SubResource("StyleBoxFlat_uw2bi")
 
-[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort/Rounder" unique_id=617771321]
+[node name="Avatar" type="TextureRect" parent="HBoxContainer/Sidebar/UserPref/Sort/Rounder" unique_id=617771321]
 show_behind_parent = true
 clip_contents = true
 custom_minimum_size = Vector2(40, 40)
@@ -168,48 +133,48 @@ theme = SubResource("Theme_cpih4")
 texture = ExtResource("3_uw2bi")
 expand_mode = 2
 
-[node name="Name" type="Label" parent="MarginContainer/HBoxContainer/Sidebar/UserPref/Sort" unique_id=2061364797]
+[node name="Name" type="Label" parent="HBoxContainer/Sidebar/UserPref/Sort" unique_id=2061364797]
 layout_mode = 2
 text = "User"
 
-[node name="Main" type="VBoxContainer" parent="MarginContainer/HBoxContainer" unique_id=1412139361]
+[node name="Main" type="VBoxContainer" parent="HBoxContainer" unique_id=1412139361]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.01
-theme_override_constants/separation = 15
+theme_type_variation = &"ChannelContent"
 
-[node name="TopPanel" type="PanelContainer" parent="MarginContainer/HBoxContainer/Main" unique_id=1530775365]
+[node name="TopPanel" type="PanelContainer" parent="HBoxContainer/Main" unique_id=1530775365]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 
-[node name="ChannelLabel" type="Label" parent="MarginContainer/HBoxContainer/Main/TopPanel" unique_id=1188352396]
+[node name="ChannelLabel" type="Label" parent="HBoxContainer/Main/TopPanel" unique_id=1188352396]
 layout_mode = 2
 text = "Channel Name"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/Main" unique_id=1662942073]
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/Main" unique_id=1662942073]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="MessageList" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Main/ScrollContainer" unique_id=330579357]
+[node name="MessageList" type="VBoxContainer" parent="HBoxContainer/Main/ScrollContainer" unique_id=330579357]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 30
+theme_type_variation = &"MessageContainer"
 metadata/_edit_use_anchors_ = true
 
-[node name="Message" parent="MarginContainer/HBoxContainer/Main/ScrollContainer/MessageList" unique_id=2052089132 instance_placeholder="res://message.tscn"]
+[node name="Message" parent="HBoxContainer/Main/ScrollContainer/MessageList" unique_id=2052089132 instance_placeholder="res://message.tscn"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Main" unique_id=1145187782]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Main" unique_id=1145187782]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Main/VBoxContainer" unique_id=1749170917]
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/Main/VBoxContainer" unique_id=1749170917]
 layout_mode = 2
 
-[node name="StatusBar" type="Label" parent="MarginContainer/HBoxContainer/Main/VBoxContainer/HBoxContainer" unique_id=1814076997]
+[node name="StatusBar" type="Label" parent="HBoxContainer/Main/VBoxContainer/HBoxContainer" unique_id=1814076997]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
@@ -217,7 +182,7 @@ size_flags_horizontal = 3
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
 text = "Someone is typing..."
 
-[node name="CancelReply" type="Button" parent="MarginContainer/HBoxContainer/Main/VBoxContainer/HBoxContainer" unique_id=263479393]
+[node name="CancelReply" type="Button" parent="HBoxContainer/Main/VBoxContainer/HBoxContainer" unique_id=263479393]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
@@ -225,7 +190,7 @@ theme_override_font_sizes/font_size = 16
 text = ""
 flat = true
 
-[node name="NewMessageInput" type="CodeEdit" parent="MarginContainer/HBoxContainer/Main/VBoxContainer" unique_id=1149097292]
+[node name="NewMessageInput" type="CodeEdit" parent="HBoxContainer/Main/VBoxContainer" unique_id=1149097292]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
@@ -236,12 +201,12 @@ wrap_mode = 1
 scroll_smooth = true
 scroll_fit_content_height = true
 
-[node name="Panel2" type="Panel" parent="MarginContainer/HBoxContainer" unique_id=1120447410]
+[node name="Panel2" type="Panel" parent="HBoxContainer" unique_id=1120447410]
 visible = false
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Panel2" unique_id=747202925]
+[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer/Panel2" unique_id=747202925]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 5.0
@@ -251,42 +216,38 @@ pivot_offset = Vector2(169, 255)
 size_flags_horizontal = 0
 theme_override_constants/separation = 4
 
-[node name="HBoxContainer14" type="HBoxContainer" parent="MarginContainer/HBoxContainer/Panel2/VBoxContainer2" unique_id=550977391]
+[node name="HBoxContainer14" type="HBoxContainer" parent="HBoxContainer/Panel2/VBoxContainer2" unique_id=550977391]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="Avatar" type="TextureRect" parent="MarginContainer/HBoxContainer/Panel2/VBoxContainer2/HBoxContainer14" unique_id=105679074]
+[node name="Avatar" type="TextureRect" parent="HBoxContainer/Panel2/VBoxContainer2/HBoxContainer14" unique_id=105679074]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 0
 texture = ExtResource("3_uw2bi")
 expand_mode = 1
 
-[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/Panel2/VBoxContainer2/HBoxContainer14" unique_id=518923629]
+[node name="Label" type="Label" parent="HBoxContainer/Panel2/VBoxContainer2/HBoxContainer14" unique_id=518923629]
 layout_mode = 2
 text = "Godot"
 
-[node name="Members" type="PanelContainer" parent="MarginContainer/HBoxContainer" unique_id=1556673316]
+[node name="Members" type="PanelContainer" parent="HBoxContainer" unique_id=1556673316]
 visible = false
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/Members" unique_id=830101782]
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/Members" unique_id=830101782]
 layout_mode = 2
 follow_focus = true
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 3
 
-[node name="GuildList" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Members/ScrollContainer" unique_id=1896472401]
+[node name="GuildList" type="VBoxContainer" parent="HBoxContainer/Members/ScrollContainer" unique_id=1896472401]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="GuildItem" parent="MarginContainer/HBoxContainer/Members/ScrollContainer/GuildList" unique_id=1785283860 instance_placeholder="res://guild_item.tscn"]
+[node name="GuildItem" parent="HBoxContainer/Members/ScrollContainer/GuildList" unique_id=1785283860 instance_placeholder="res://guild_item.tscn"]
 layout_mode = 2
 
 [node name="MessageContext" parent="." unique_id=533771705 instance=ExtResource("3_cpih4")]
-unique_name_in_owner = true
 visible = false
-
-[connection signal="pressed" from="MarginContainer/HBoxContainer/Main/VBoxContainer/HBoxContainer/CancelReply" to="." method="_on_cancel_reply_pressed"]
-[connection signal="gui_input" from="MarginContainer/HBoxContainer/Main/VBoxContainer/NewMessageInput" to="." method="_on_code_edit_gui_input"]

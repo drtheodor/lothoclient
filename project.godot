@@ -50,7 +50,7 @@ window/ios/suppress_ui_gesture=false
 
 [gui]
 
-theme/custom_font="uid://b2mh0bfpcako3"
+theme/custom="uid://b02bplt5hyd3m"
 
 [physics]
 
@@ -101,6 +101,7 @@ environment/volumetric_fog/use_filter=0
 limits/spatial_indexer/update_iterations_per_frame=0
 limits/opengl/max_renderable_lights=2
 limits/opengl/max_lights_per_object=2
+environment/defaults/default_clear_color=Color(0.02745098, 0.02745098, 0.03529412, 1)
 lightmapping/bake_quality/low_quality_ray_count=1
 lightmapping/bake_quality/medium_quality_ray_count=1
 lightmapping/bake_quality/high_quality_ray_count=1

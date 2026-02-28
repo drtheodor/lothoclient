@@ -1,0 +1,46 @@
+[gd_resource type="Theme" format=3 uid="uid://b02bplt5hyd3m"]
+
+[ext_resource type="FontFile" uid="uid://b2mh0bfpcako3" path="res://JetBrainsMonospacedNerdFont.ttf" id="1_o1y1n"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o1y1n"]
+bg_color = Color(0.6, 0.6, 0.6, 0.19607843)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jkr3q"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+corner_detail = 4
+
+[resource]
+default_font = ExtResource("1_o1y1n")
+ChannelContent/base_type = &"BoxContainer"
+ChannelContent/constants/separation = 16
+DisabledLabel/base_type = &"Label"
+DisabledLabel/colors/font_color = Color(0.7411765, 0.7411765, 0.7411765, 1)
+ExtraLabel/base_type = &"SmallLabel"
+ExtraLabel/colors/font_color = Color(0.65882355, 0.65882355, 0.65882355, 1)
+FatLabel/base_type = &"Label"
+FatLabel/colors/font_outline_color = Color(1, 1, 1, 1)
+FatLabel/constants/outline_size = 1
+FocusableRichLabel/base_type = &"RichTextLabel"
+FocusableRichLabel/styles/focus = SubResource("StyleBoxFlat_o1y1n")
+MainContent/base_type = &"BoxContainer"
+MainContent/constants/separation = 8
+MarginContainer/constants/margin_bottom = 8
+MarginContainer/constants/margin_left = 8
+MarginContainer/constants/margin_right = 8
+MarginContainer/constants/margin_top = 8
+MessageContainer/base_type = &"BoxContainer"
+MessageContainer/constants/separation = 30
+RounderPanel/base_type = &"PanelContainer"
+RounderPanel/styles/panel = SubResource("StyleBoxFlat_jkr3q")
+SmallLabel/base_type = &"Label"
+SmallLabel/font_sizes/font_size = 12
+SmallRichLabel/base_type = &"RichTextLabel"
+SmallRichLabel/font_sizes/bold_font_size = 12
+SmallRichLabel/font_sizes/bold_italics_font_size = 12
+SmallRichLabel/font_sizes/italics_font_size = 12
+SmallRichLabel/font_sizes/mono_font_size = 12
+SmallRichLabel/font_sizes/normal_font_size = 12

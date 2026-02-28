@@ -3,35 +3,6 @@
 [ext_resource type="Script" uid="uid://c6d1howur8mgk" path="res://message.gd" id="1_d26o2"]
 [ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="3_13d81"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_13d81"]
-bg_color = Color(0, 0, 0, 1)
-border_color = Color(0.8, 0.8, 0.8, 0)
-border_blend = true
-corner_radius_top_left = 100
-corner_radius_top_right = 100
-corner_radius_bottom_right = 100
-corner_radius_bottom_left = 100
-corner_detail = 20
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5h2ww"]
-bg_color = Color(0.8781866, 0.2812874, 0.17693636, 1)
-corner_radius_top_left = 100
-corner_radius_top_right = 100
-corner_radius_bottom_right = 100
-corner_radius_bottom_left = 100
-
-[sub_resource type="LabelSettings" id="LabelSettings_d26o2"]
-line_spacing = 0.0
-outline_size = 1
-shadow_size = 0
-
-[sub_resource type="LabelSettings" id="LabelSettings_06ydw"]
-line_spacing = 0.0
-font_size = 12
-font_color = Color(0.6598761, 0.6598762, 0.65987617, 1)
-shadow_size = 3
-shadow_color = Color(0, 0, 0, 0.08235294)
-
 [node name="VBoxContainer2" type="VBoxContainer" unique_id=108905486]
 anchors_preset = 10
 anchor_right = 1.0
@@ -42,7 +13,7 @@ script = ExtResource("1_d26o2")
 [node name="Message" type="HBoxContainer" parent="." unique_id=918810476]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+theme_type_variation = &"MainContent"
 
 [node name="Rounder" type="PanelContainer" parent="Message" unique_id=155362356]
 clip_children = 1
@@ -50,7 +21,7 @@ clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_13d81")
+theme_type_variation = &"RounderPanel"
 
 [node name="Avatar" type="TextureRect" parent="Message/Rounder" unique_id=279053992]
 unique_name_in_owner = true
@@ -61,14 +32,9 @@ size_flags_vertical = 0
 texture = ExtResource("3_13d81")
 expand_mode = 2
 
-[node name="StatusDot" type="Panel" parent="Message/Rounder" unique_id=232601416]
-visible = false
-z_index = 1
-custom_minimum_size = Vector2(13, 13)
+[node name="StatusDot" parent="Message/Rounder" unique_id=412956902 instance_placeholder="res://status_dot.tscn"]
+visible = true
 layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 8
-theme_override_styles/panel = SubResource("StyleBoxFlat_5h2ww")
 
 [node name="ContentBase" type="VBoxContainer" parent="Message" unique_id=328149225]
 unique_name_in_owner = true
@@ -82,8 +48,8 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 1
+theme_type_variation = &"FatLabel"
 text = "Author"
-label_settings = SubResource("LabelSettings_d26o2")
 autowrap_trim_flags = 0
 justification_flags = 1
 
@@ -91,6 +57,6 @@ justification_flags = 1
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 1
+theme_type_variation = &"ExtraLabel"
 text = "8:30 PM"
-label_settings = SubResource("LabelSettings_06ydw")
 vertical_alignment = 1

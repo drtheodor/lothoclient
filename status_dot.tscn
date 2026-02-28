@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://c52nanrtvaeb8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5h2ww"]
+bg_color = Color(0.8781866, 0.2812874, 0.17693636, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[node name="StatusDot" type="Panel" unique_id=412956902]
+visible = false
+z_index = 1
+custom_minimum_size = Vector2(13, 13)
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_5h2ww")
