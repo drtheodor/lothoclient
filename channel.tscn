@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://c2cfg4anvcnhw" path="res://channel.gd" id="1_vksbt"]
 [ext_resource type="PackedScene" uid="uid://bfuyrfqt5fqh2" path="res://message_context.tscn" id="3_cpih4"]
 [ext_resource type="Texture2D" uid="uid://bp5hu330k3ero" path="res://icon.svg" id="3_uw2bi"]
+[ext_resource type="Script" uid="uid://ugldxgqntsru" path="res://idler.gd" id="4_p6rag"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uw2bi"]
 bg_color = Color(0.8781866, 0.2812874, 0.17693636, 1)
@@ -251,5 +252,8 @@ layout_mode = 2
 
 [node name="MessageContext" parent="." unique_id=533771705 instance=ExtResource("3_cpih4")]
 visible = false
+
+[node name="Idler" type="Node" parent="." unique_id=618536765]
+script = ExtResource("4_p6rag")
 
 [connection signal="gui_input" from="HBoxContainer/Main/VBoxContainer/NewMessageInput" to="." method="_on_code_edit_gui_input"]
