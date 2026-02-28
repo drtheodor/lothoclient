@@ -39,8 +39,7 @@ func add_message(message: Message) -> void:
 		self.add_child(header)
 		self.move_child(header, 0)
 	
-	# FIXME: temp await fix since there's no Promise.all :(
-	await self.label.from_tokens(message.tokens, MAX_IMAGE_WIDTH, EMOJI_SIZE)
+	self.label.from_tokens(message.tokens, MAX_IMAGE_WIDTH, EMOJI_SIZE)
 
 func _set_author(author_name: String, author_id: String, avatar_id: String) -> void:
 	%Name.text = author_name
