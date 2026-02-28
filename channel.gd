@@ -180,9 +180,9 @@ func _update_typing() -> void:
 				self._typing_stack.erase(key)
 			
 		if people.size() == 1:
-			self.status_bar.text = "%s is typing..." % people[0]
+			self.status_bar.text = "󰇘 %s is typing..." % people[0]
 		else:
-			self.status_bar.text = "%s are typing..." % ", ".join(people)
+			self.status_bar.text = "󰇘 %s are typing..." % ", ".join(people)
 		
 		self.status_bar.visible = true
 	else:
