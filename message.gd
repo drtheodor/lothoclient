@@ -60,13 +60,12 @@ func _set_timestamp(timestamp: int) -> void:
 	var now: Dictionary = Time.get_datetime_dict_from_system()
 
 	var text: String = "%02d:%02d" % [local["hour"], local["minute"]]
-
-	if local["day"] != now["day"] or local["month"] != now["month"]:
-		text = "%02d-%02d " % [local["month"], local["day"]] + text
-
-	if local["year"] != now["year"]:
-		text = "%04d-" % local["year"] + text
-
+	
+	if now["day"] - 1 == local["day"] and local["month"] == now["month"] and local["year"] == now["year"]:
+		text = "Yesterday, %s" % text
+	elif local["day"] != now["day"] or local["month"] != now["month"] or local["year"] != now["year"]:
+		text = "%02d/%02d/%04d, %s" % [local["day"], local["month"], local["year"], text]
+	
 	%Time.text = text
 
 func set_pending() -> void:
