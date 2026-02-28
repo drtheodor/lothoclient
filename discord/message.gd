@@ -28,7 +28,7 @@ static func with_user(user: User) -> Message:
 	message.author_avatar = user.avatar_id
 	return message
 
-static func from_json(data: Dictionary) -> Message:
+static func from_json(data: Dictionary, short: bool = false) -> Message:
 	var _message_id: String = data["id"]
 	var author: Dictionary = data["author"]
 	#var mentions = message_data["mentions"]
@@ -44,12 +44,18 @@ static func from_json(data: Dictionary) -> Message:
 	_author_avatar = _author_avatar if _author_avatar else ""
 	
 	var referenced_message: Dictionary = data.get("referenced_message", {})
-	var _referenced: Message = Message.from_json(referenced_message) if referenced_message else null
+	var _referenced: Message = Message.from_json(referenced_message, true) if referenced_message else null
 
 	var _timestamp: int = Time.get_unix_time_from_datetime_string(iso_timestamp)
 	var _nonce: String = data.get("nonce", "")
 	
 	var content: String = data["content"]
+	
+	if short:
+		content = content.replace("\n", "")
+		if content.length() > 120:
+			content = content.substr(0, 120) + "…"
+	
 	var _tokens: Array[Token] = Token.parse(content)
 	
 	for attachment: Dictionary in attachments:
@@ -239,7 +245,6 @@ class LinkToken extends Token:
 @abstract
 class AbstractImageToken extends Token:
 	var url: String
-	var texture: ImageTexture 
 	
 	func _init(_type: Type, _url: String) -> void:
 		super(_type)
