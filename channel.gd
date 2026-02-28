@@ -38,7 +38,9 @@ var _replying_to: Message:
 
 func _ready() -> void:
 	if OS.get_environment("THEME") == "transparent":
-		self.get_tree().get_root().transparent_bg = true
+		self.get_window().transparent = true
+		get_viewport().transparent_bg = true
+		# display/window/per_pixel_transparency/allowed = true
 		
 		var style: StyleBoxFlat = StyleBoxFlat.new()
 		style.bg_color = Color.TRANSPARENT
