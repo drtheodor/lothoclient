@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://d2fiuhok5yiod" path="res://channel_category_item.gd" id="1_p33lj"]
 
 [node name="ChannelCategoryItem" type="FoldableContainer" unique_id=1704411717]
+theme_type_variation = &"ChannelCategory"
 title = "Category Name"
 title_text_overrun_behavior = 3
 script = ExtResource("1_p33lj")

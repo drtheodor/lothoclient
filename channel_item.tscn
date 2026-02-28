@@ -8,6 +8,7 @@ anchor_right = 1.0
 offset_bottom = 31.0
 grow_horizontal = 2
 size_flags_horizontal = 3
+theme_type_variation = &"ChannelButton"
 text = "Channel Name"
 alignment = 0
 script = ExtResource("1_ikl0i")
