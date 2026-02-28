@@ -7,10 +7,11 @@ const CACHE_DIR: String = "user://cache/"
 
 func _init(http: HTTP) -> void:
 	self._http = http
-
-func _ready() -> void:
+	
 	# Create cache directory if it doesn't exist
-	DirAccess.make_dir_recursive_absolute(CACHE_DIR)
+	var err: Error = DirAccess.make_dir_recursive_absolute(CACHE_DIR)
+	if err != OK:
+		push_error("Failed to create cache dir: ", err)
 
 func get_cached(url: String) -> ImageTexture:
 	return _cache.get(url)
@@ -32,8 +33,7 @@ func get_or_request(url: String, ext: String) -> ImageTexture:
 				_cache[url] = texture
 				return texture
 		
-		await request_image(url, ext).done
-		return _cache[url]
+		return await request_image(url, ext).done
 
 func request_image(url: String, ext: StringName) -> Future:
 	if _pending.has(url):
