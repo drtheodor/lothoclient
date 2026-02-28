@@ -251,3 +251,5 @@ layout_mode = 2
 
 [node name="MessageContext" parent="." unique_id=533771705 instance=ExtResource("3_cpih4")]
 visible = false
+
+[connection signal="gui_input" from="HBoxContainer/Main/VBoxContainer/NewMessageInput" to="." method="_on_code_edit_gui_input"]
