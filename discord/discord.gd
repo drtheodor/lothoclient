@@ -5,7 +5,7 @@ const WEBSOCKET_URL: String = "wss://gateway.discord.gg/?encoding=json&v=9&compr
 const CDN_URL: String = "https://cdn.discordapp.com"
 const BASE_URL: String = "https://discord.com/api/v9"
 
-const GATEWAY_POLL_DELAY: int = 100 # in ms
+const GATEWAY_POLL_DELAY: int = 500 # in ms
 
 const MASQUERADE_OS: String = "Linux"
 const MASQUERADE_LOCALE: String = "en-US"

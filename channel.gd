@@ -1,6 +1,6 @@
 extends Control
 
-@onready var message_list: VBoxContainer = %MessageList
+@onready var message_list: Node = %MessageList
 @onready var channel_list: VBoxContainer = %ChannelList
 @onready var message_input: CodeEdit = %NewMessageInput
 @onready var guild_list: Container = %GuildList
@@ -39,13 +39,6 @@ var _replying_to: Message:
 func _ready() -> void:
 	if OS.get_environment("THEME") == "transparent":
 		self.get_window().transparent = true
-		get_viewport().transparent_bg = true
-		# display/window/per_pixel_transparency/allowed = true
-		
-		var style: StyleBoxFlat = StyleBoxFlat.new()
-		style.bg_color = Color.TRANSPARENT
-		
-		self.add_theme_stylebox_override("panel", style)
 	
 	Discord.on_ready.connect(self._on_discord_ready)
 	Discord.on_message.connect(self._on_message)
