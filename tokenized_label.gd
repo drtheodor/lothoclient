@@ -3,6 +3,9 @@ extends RichTextLabel
 
 const PLACEHOLDER_IMAGE: Texture2D = preload("res://icon.svg")
 
+func _ready() -> void:
+	self.meta_clicked.connect(func (meta: Variant) -> void: OS.shell_open(str(meta)))
+
 func from_tokens(tokens: Array[Message.Token], max_image_width: int, emoji_size: int) -> void:
 	for token: Message.Token in tokens:
 		match token.type:
@@ -12,12 +15,7 @@ func from_tokens(tokens: Array[Message.Token], max_image_width: int, emoji_size:
 			
 			Message.Token.Type.LINK:
 				var link_token: Message.LinkToken = token
-				
-				self.push_color(Color.LIGHT_BLUE)
-				self.push_meta(link_token.url)
-				self.add_text(link_token.url)
-				self.pop()
-				self.pop()
+				self._handle_link(link_token.url)
 			
 			Message.Token.Type.IMAGE:
 				if not max_image_width:
@@ -31,6 +29,13 @@ func from_tokens(tokens: Array[Message.Token], max_image_width: int, emoji_size:
 				var emoji_token: Message.EmojiToken = token
 				self._handle_emoji(emoji_token, emoji_size)
 
+func _handle_link(url: String) -> void:
+	self.push_color(Color.LIGHT_BLUE)
+	self.push_meta(url)
+	self.add_text(url)
+	self.pop()
+	self.pop()
+
 func _handle_image(token: Message.ImageToken, max_image_width: int) -> void:
 	var texture_rect: TextureRect = TextureRect.new()
 
@@ -41,6 +46,10 @@ func _handle_image(token: Message.ImageToken, max_image_width: int) -> void:
 	
 	var ext: String = Url.get_extension(token.url)
 	var tex: ImageTexture = await Discord.image_cache.get_or_request(token.url, ext)
+	
+	if not tex:
+		self._handle_link(token.url)
+		return
 	
 	var tex_size: Vector2 = tex.get_size()
 	var width: int = int(tex_size.x)

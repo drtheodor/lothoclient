@@ -27,8 +27,6 @@ func add_message(message: Message) -> void:
 			self.mouse_entered_msg.emit(new_label, message)
 	)
 	
-	new_label.meta_clicked.connect(func (meta: Variant) -> void: OS.shell_open(str(meta)))
-	
 	self.label = new_label
 	%ContentBase.add_child(self.label)
 	
