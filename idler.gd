@@ -21,9 +21,11 @@ func _notification(what: int) -> void:
 			self._unidle()
 
 func _idle() -> void:
+	RenderingServer.render_loop_enabled = false
 	OS.low_processor_usage_mode_sleep_usec = idle_sleep_msec
 	Engine.max_fps = idle_max_fps
 
 func _unidle() -> void:
+	RenderingServer.render_loop_enabled = true
 	OS.low_processor_usage_mode_sleep_usec = self._low_processor_sleep
 	Engine.max_fps = self._max_fps
