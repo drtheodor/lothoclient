@@ -14,6 +14,10 @@ func _init(_guild_id: String, _guild_name: String, _guild_icon: String, _channel
 # TODO: improve typing
 static func from_json(data: Dictionary) -> Guild:
 	var id: String = data["id"]
+	
+	if data.get("unavailable"):
+		return Guild.new(id, "Unavailable", "", [])
+	
 	var props: Variant = data["properties"]
 	var name: String = props["name"]
 	var icon: String = props["icon"] if props["icon"] else ""
