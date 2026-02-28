@@ -6,8 +6,13 @@ get worse than Electron!
 ## How to use
 1. Set variables via `.env` file or via whatever your OS provides:
 - `TOKEN`: your Discord token.
+2. Build `zlibext`. 
+- This can be done by running `scons` in `addons/zlibext/`.
 2. Run it!
 
 <img width="2226" height="1419" alt="image" src="https://github.com/user-attachments/assets/24305533-dc5d-4c58-9a0c-59151017970b" />
+
+
+---
 
 (part of the lotho-project, see [lothopaper](https://github.com/drtheodor/lothopaper))

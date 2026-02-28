@@ -16,6 +16,7 @@ compile_commands.json
 /addons/zlibext/src/gen
 
 # Binaries
+/addons/zlibext/bin
 *.o
 *.os
 *.obj
