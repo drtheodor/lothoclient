@@ -257,7 +257,7 @@ class EmojiToken extends AbstractImageToken:
 	var animated: bool
 	
 	func _init(_emoji_name: String, _emoji_id: String, _animated: bool) -> void:
-		super(Type.EMOJI, "%s/emojis/%s.%s?size=64&quality=lossless" % [
+		super(Type.EMOJI, "%s/emojis/%s.%s?size=24" % [
 			Discord.CDN_URL, _emoji_id, "gif" if _animated else "webp"
 		])
 		
