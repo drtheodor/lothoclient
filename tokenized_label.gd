@@ -28,6 +28,12 @@ func from_tokens(tokens: Array[Message.Token], max_image_width: int, emoji_size:
 			Message.Token.Type.EMOJI:
 				var emoji_token: Message.EmojiToken = token
 				self._handle_emoji(emoji_token, emoji_size)
+			
+			Message.Token.Type.USER:
+				var user_token: Message.UserToken = token
+				self.push_color(Color.LIGHT_BLUE)
+				self.add_text("@" + user_token.user_id)
+				self.pop()
 
 func _handle_link(url: String) -> void:
 	self.push_color(Color.LIGHT_BLUE)

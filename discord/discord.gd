@@ -5,7 +5,7 @@ const WEBSOCKET_URL: String = "wss://gateway.discord.gg/?encoding=json&v=9&compr
 const CDN_URL: String = "https://cdn.discordapp.com"
 const BASE_URL: String = "https://discord.com/api/v9"
 
-const GATEWAY_POLL_DELAY: int = 500 # in ms
+const GATEWAY_POLL_DELAY: int = 250 # in ms
 
 const MASQUERADE_OS: String = "Linux"
 const MASQUERADE_LOCALE: String = "en-US"
@@ -38,6 +38,7 @@ var image_cache: ImageCache = ImageCache.new(http)
 
 signal on_ready()
 signal on_message(message: Message)
+signal on_typing(user: User)
 
 func _ready() -> void:
 	self.add_child(self.http)
@@ -193,6 +194,17 @@ func _on_gateway_message(socket: WebSocketPeer, some_json: Variant) -> void:
 					}
 				}))
 			
+			"TYPING_START":
+				var some_data: Variant = json["d"]
+				
+				if not some_data or some_data is not Dictionary:
+					push_error("'TYPING_START' event is invalid: ", some_data)
+					return
+				
+				var message_json: Dictionary = some_data
+				var typing_user: Dictionary = message_json["member"]["user"]
+				self.on_typing.emit(User.from_json(typing_user))
+			
 			"MESSAGE_CREATE":
 				var some_data: Variant = json["d"]
 				
@@ -311,6 +323,43 @@ func _generate_snowflake() -> int:
 	
 	_snowflakes += 1
 	return res
+
+func follow_guild(guild_id: String) -> void:
+	self._gateway.socket.send_text(JSON.stringify({
+		"op": 36,
+		"d": {
+			"guild_id": guild_id
+		}
+	}))
+	
+	var whatever: String = JSON.stringify({
+		"op": 43,
+		"d": {
+			"guild_id": guild_id,
+			"fields": ["status", "voice_start_time"]
+		}
+	})
+	
+	# why? no idea!
+	for i: int in range(3):
+		self._gateway.socket.send_text(whatever)
+	
+	self._gateway.socket.send_text(JSON.stringify({
+		"op": 37,
+		"d": {
+			"subscriptions": {
+				guild_id: {
+					"typing": true,
+					"activities": true,
+					"threads": true
+				}
+			}
+		}
+	}))
+
+func mark_as_read(channel_id: String, message_id: String) -> void:
+	var url: String = "%s/channels/%s/messages/%s/ack" % [BASE_URL, channel_id, message_id]
+	self.http.request(url, ["Authorization: " + Discord.token], HTTPClient.METHOD_POST, JSON.stringify({"last_viewed": 4077, "token": null}))
 
 static var token: String:
 	get:

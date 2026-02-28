@@ -19,6 +19,11 @@ const ChannelCategoryItemScene: PackedScene = preload("res://channel_category_it
 const GuildItemScene: PackedScene = preload("res://guild_item.tscn")
 
 var _busy: bool
+var _typing_stack: Dictionary[String, int] = {}
+var _typing_timer: Timer = Timer.new()
+
+var last_message: UiMessage
+var pending_messages: Dictionary[String, Node] = {}
 
 var _hover_message: Message
 var _replying_to: Message:
@@ -42,8 +47,16 @@ func _ready() -> void:
 	
 	Discord.on_ready.connect(self._on_discord_ready)
 	Discord.on_message.connect(self._on_message)
+	Discord.on_typing.connect(self._on_typing)
 	
 	self.context.on_reply.connect(func() -> void: self._replying_to = self._hover_message)
+	
+	_typing_timer.one_shot = false
+	_typing_timer.autostart = true
+	_typing_timer.wait_time = 1
+	_typing_timer.timeout.connect(self._update_typing)
+	
+	self.add_child(self._typing_timer)
 
 func _init_guild_channels(channels: Array[Channel.GuildChannel]) -> void:
 	for child: Node in channel_list.get_children():
@@ -96,6 +109,8 @@ func _fetch_messages() -> void:
 
 	self.scroll_to_bottom()
 	self._busy = false
+	
+	Discord.mark_as_read(Discord.channel, messages[-1].message_id)
 
 func _add_pending_message(text: String, nonce: int) -> void:
 	var pending: UiMessage = MessageScene.instantiate()
@@ -129,10 +144,8 @@ func _on_discord_ready() -> void:
 	self.user_pref_avatar.texture = await Discord.get_avatar(Discord.user.user_id, Discord.user.avatar_id)
 
 func _on_guild_change(guild: Guild) -> void:
+	Discord.follow_guild(guild.guild_id)
 	self._init_guild_channels(guild.channels)
-
-var last_message: UiMessage
-var pending_messages: Dictionary[String, Node] = {}
 
 func _on_message(message: Message, scroll: bool = true) -> void:
 	var pending: UiMessage = pending_messages.get(message.nonce)
@@ -153,6 +166,27 @@ func _on_message(message: Message, scroll: bool = true) -> void:
 	
 	if scroll and _is_near_bottom():
 		self.scroll_to_bottom()
+
+func _on_typing(user: User) -> void:
+	self._typing_stack[user.global_name] = Util.get_time_millis() + 3000
+	self._update_typing()
+
+func _update_typing() -> void:
+	if self._typing_stack:
+		var people: Array[String] = self._typing_stack.keys()
+		
+		for key: String in people:
+			if Util.get_time_millis() > self._typing_stack[key]:
+				self._typing_stack.erase(key)
+			
+		if people.size() == 1:
+			self.status_bar.text = "%s is typing..." % people[0]
+		else:
+			self.status_bar.text = "%s are typing..." % ", ".join(people)
+		
+		self.status_bar.visible = true
+	else:
+		self.status_bar.visible = self._replying_to != null
 
 func _on_message_hover(label: Control, message: Message) -> void:
 	self._hover_message = message
