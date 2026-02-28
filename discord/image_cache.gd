@@ -12,8 +12,11 @@ func _ready() -> void:
 	# Create cache directory if it doesn't exist
 	DirAccess.make_dir_recursive_absolute(CACHE_DIR)
 
+func get_cached(url: String) -> ImageTexture:
+	return _cache.get(url)
+
 func get_or_request(url: String, ext: String) -> ImageTexture:
-	var result: ImageTexture = _cache.get(url)
+	var result: ImageTexture = self.get_cached(url)
 
 	if result:
 		return result
